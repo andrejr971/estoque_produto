@@ -49,7 +49,7 @@
                         <div class="col">
                             <div class="form-group">
                                 <label>Fornecedor <span style="color: red;">*</span></label>
-                                <select name="fornecedor" id="selectFornecedor" class="form-control">
+                                <select name="fornecedor" id="fornecedor" class="form-control">
                                     
                                 </select>
                             </div>
@@ -145,7 +145,7 @@
             }
         });
 
-        var selectElement = document.querySelector('#selectFornecedor');
+        var selectElement = document.querySelector('#fornecedor');
         var elementoTable = document.querySelector('#tabelaChapas tbody')
 
             axios.get('/api/fornecedor') 
@@ -248,13 +248,28 @@
                     espessura : $('#espessura').val(),
                     preco : $('#preco').val(),
                     tipo : '1',
+                    fornecedor : $('#fornecedor').val()
                 }
 
                 $.post('/api/estoque', chapa, function() {
                     alert('Item Cadastrado');
                     chamarRender();   
+                    limpezaInput();
                 });
     
+            }
+
+            function limpezaInput() {
+                $('#nome').val('');
+                $('#unidade').val('');
+                $('#ncm').val('');
+                $('#qtd').val('');
+                $('#min').val('');
+                $('#ideal').val('');
+                $('#largura').val('');
+                $('#altura').val('');
+                $('#espessura').val('');
+                $('#preco').val('');
             }
 
             $('#formChapas').submit(function(event) {

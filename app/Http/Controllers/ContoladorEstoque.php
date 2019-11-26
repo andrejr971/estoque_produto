@@ -53,6 +53,7 @@ class ContoladorEstoque extends Controller
         $cod = str_split(strtoupper($request->input('nome')), 3);
 
         $tipo_estoque = $request->input('tipo');
+        $fornecedor_id = $request->input('fornecedor');
 
         if($tipo_estoque == '1') {
             //$ini = 'CHA';
@@ -99,7 +100,7 @@ class ContoladorEstoque extends Controller
 
         $relEstoque = Estoque_geral::all()->last();
 
-        $relEstoque->fornecedores()->attach($relEstoque->id, ['tipo_estoque_id' => $tipo_estoque]);
+        $relEstoque->fornecedores()->attach($fornecedor_id, ['tipo_estoque_id' => $tipo_estoque]);
 
         
         return json_encode($estoque);
