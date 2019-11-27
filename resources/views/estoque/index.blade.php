@@ -62,7 +62,7 @@
                             <h2 class="card-title">Produtos com baixo Estoque</h2>
                         </div>
                         <div class="card-body">
-                            <table class="table table-sm table-bordered table-striped table-responsive-sm">
+                            <table id="tabelaBaixo" class="table table-sm table-bordered table-striped table-responsive-sm">
                                 <thead class="thead-light">
                                     <tr>
                                         <th>Produto</th>
@@ -75,9 +75,63 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div class="card-footer">
+                            <a href="#" class="btn btn-outline-danger w-100">Ver mais</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+@endsection
+
+@section('javascript')
+    <script>
+        const tabelaElemento = document.querySelector('#tabelaBaixo tbody');
+                
+        function renderTabelaBaixo(dados) {
+            for(let i = 0; i < dados.length; i++) {
+                if(dados[i].qtd <= 1) {
+                    var trElemento = document.createElement('tr');
+                    var tdElemento1 = document.createElement('td');
+                    var tdElemento2 = document.createElement('td');
+                    var tdElemento3 = document.createElement('td');
+
+                    var texto1 = document.createTextNode(dados[i].descricao);
+                    var texto2 = document.createTextNode(dados[i].qtd);
+                    var texto3 = document.createTextNode(' ' + dados[i].un_medida);
+                    for(tipo of dados[i].fornecedores) {
+                        var texto4 = document.createTextNode(tipo.nome);
+                    }
+
+                    tdElemento1.appendChild(texto1);
+                    tdElemento2.appendChild(texto2);
+                    tdElemento2.appendChild(texto3);
+                    tdElemento3.appendChild(texto4);
+
+                    trElemento.appendChild(tdElemento1);
+                    trElemento.appendChild(tdElemento2);
+                    trElemento.appendChild(tdElemento3);
+
+                    tabelaElemento.appendChild(trElemento);
+                }
+
+                if(i === 2) {
+                    break;
+                }
+            }
+        }
+        function chamarRenderTabela() {
+            axios.get('/api/estoque')
+            .then(function(response) {
+                renderTabelaBaixo(response.data);
+            })
+            .catch(function(erro) {
+                alert(erro);
+            });
+        }
+
+        chamarRenderTabela();
+        
+    </script>
 @endsection

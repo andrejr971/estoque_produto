@@ -124,7 +124,6 @@
                                 <th>Código</th>
                                 <th>Quantidade</th>
                                 <th>Fornecedor</th>
-                                <th>Ação</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -193,7 +192,7 @@
                         }
                         //var texto6 = document.createTextNode(dado.telefone);
 
-                        var btnEditar = document.createElement('button');
+                        /*var btnEditar = document.createElement('button');
                         var textoBtn1 = document.createTextNode('Editar');
                         btnEditar.setAttribute('onclick', 'editar(' + dado.id + ')');
                         btnEditar.setAttribute('class', 'btn btn-outline-info');
@@ -203,22 +202,22 @@
                         var textoBtn2 = document.createTextNode('Remover');
                         btnRemover.setAttribute('onclick', 'remover(' + dado.id + ')');
                         btnRemover.setAttribute('class', 'btn btn-outline-danger ml-2');
-                        btnRemover.appendChild(textoBtn2);
+                        btnRemover.appendChild(textoBtn2);*/
 
                         tdElemento1.appendChild(texto1);
                         tdElemento2.appendChild(texto2);
                         tdElemento3.appendChild(texto3);
                         tdElemento4.appendChild(texto4);
                         tdElemento5.appendChild(texto5);
-                        tdElemento6.appendChild(btnEditar);
-                        tdElemento6.appendChild(btnRemover);
+                        /*tdElemento6.appendChild(btnEditar);
+                        tdElemento6.appendChild(btnRemover);*/
 
                         trElemento.appendChild(tdElemento1);
                         trElemento.appendChild(tdElemento2);
                         trElemento.appendChild(tdElemento3);
                         trElemento.appendChild(tdElemento4);
                         trElemento.appendChild(tdElemento5);
-                        trElemento.appendChild(tdElemento6);
+                        //trElemento.appendChild(tdElemento6);
 
                         elementoTable.appendChild(trElemento);
                     }
@@ -261,14 +260,12 @@
 
             function limpezaInput() {
                 $('#nome').val('');
-                $('#unidade').val('');
                 $('#ncm').val('');
                 $('#qtd').val('');
                 $('#min').val('');
                 $('#ideal').val('');
                 $('#largura').val('');
                 $('#altura').val('');
-                $('#espessura').val('');
                 $('#preco').val('');
             }
 

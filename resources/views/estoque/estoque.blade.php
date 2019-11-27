@@ -96,6 +96,75 @@
                 alert('Selecione uma opção');
             }
         });
+
+        var elementoTable = document.querySelector('#tabelaEstoque tbody')
+
+        function renderChapas(dados) {
+                elementoTable.innerHTML = '';
+                for(dado of dados) {
+                    
+                    var trElemento = document.createElement('tr');
+                    var tdElemento1 = document.createElement('td');
+                    var tdElemento2 = document.createElement('td');
+                    var tdElemento3 = document.createElement('td');
+                    var tdElemento4 = document.createElement('td');
+                    var tdElemento5 = document.createElement('td');
+                    var tdElemento6 = document.createElement('td');
+
+                    var texto1 = document.createTextNode(dado.id);
+                    var texto2 = document.createTextNode(dado.descricao);
+                    var texto4 = document.createTextNode(dado.cod_item);
+                    var texto5 = document.createTextNode(dado.qtd);
+                    for(tipo of dado.fornecedores) {
+                        if(tipo.pivot.tipo_estoque_id == 1) {
+                            var texto3 = document.createTextNode('CHAPAS');
+                        }
+                    }
+
+                    var btnEditar = document.createElement('button');
+                    var textoBtn1 = document.createTextNode('Editar');
+                    btnEditar.setAttribute('onclick', 'editar(' + dado.id + ')');
+                    btnEditar.setAttribute('class', 'btn btn-outline-info');
+                    btnEditar.appendChild(textoBtn1);
+
+                    var btnRemover = document.createElement('button');
+                    var textoBtn2 = document.createTextNode('Remover');
+                    btnRemover.setAttribute('onclick', 'remover(' + dado.id + ')');
+                    btnRemover.setAttribute('class', 'btn btn-outline-danger ml-2');
+                    btnRemover.appendChild(textoBtn2);
+
+                    tdElemento1.appendChild(texto1);
+                    tdElemento2.appendChild(texto2);
+                    tdElemento3.appendChild(texto3);
+                    tdElemento4.appendChild(texto4);
+                    tdElemento5.appendChild(texto5);
+                    tdElemento6.appendChild(btnEditar);
+                    tdElemento6.appendChild(btnRemover);
+
+                    trElemento.appendChild(tdElemento1);
+                    trElemento.appendChild(tdElemento2);
+                    trElemento.appendChild(tdElemento3);
+                    trElemento.appendChild(tdElemento4);
+                    trElemento.appendChild(tdElemento5);
+                    trElemento.appendChild(tdElemento6);
+
+                    elementoTable.appendChild(trElemento);
+                }
+            }
+
+            function chamarRender() {
+                axios.get('/api/estoque')
+                .then(function(response) {
+                    renderChapas(response.data);
+                })
+                .catch(function(erro) {
+                    alert(erro);
+                });
+            }
+
+            $(function() {
+                chamarRender();
+            })
     </script>
     
 @endsection
