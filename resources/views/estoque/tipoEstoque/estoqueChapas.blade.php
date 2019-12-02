@@ -64,6 +64,9 @@
                                     <option value="CX">CX</option>
                                     <option value="RL">RL</option>
                                     <option value="MT">MT</option>
+                                    <option value="LT">LT</option>
+                                    <option value="ML">ML</option>
+                                    <option value="KG">KG</option>
                                 </select>
                             </div>
                         </div>
@@ -190,34 +193,18 @@
                         for(fornecedor of dado.fornecedores) {
                             var texto5 = document.createTextNode(fornecedor.nome);
                         }
-                        //var texto6 = document.createTextNode(dado.telefone);
-
-                        /*var btnEditar = document.createElement('button');
-                        var textoBtn1 = document.createTextNode('Editar');
-                        btnEditar.setAttribute('onclick', 'editar(' + dado.id + ')');
-                        btnEditar.setAttribute('class', 'btn btn-outline-info');
-                        btnEditar.appendChild(textoBtn1);
-
-                        var btnRemover = document.createElement('button');
-                        var textoBtn2 = document.createTextNode('Remover');
-                        btnRemover.setAttribute('onclick', 'remover(' + dado.id + ')');
-                        btnRemover.setAttribute('class', 'btn btn-outline-danger ml-2');
-                        btnRemover.appendChild(textoBtn2);*/
 
                         tdElemento1.appendChild(texto1);
                         tdElemento2.appendChild(texto2);
                         tdElemento3.appendChild(texto3);
                         tdElemento4.appendChild(texto4);
                         tdElemento5.appendChild(texto5);
-                        /*tdElemento6.appendChild(btnEditar);
-                        tdElemento6.appendChild(btnRemover);*/
 
                         trElemento.appendChild(tdElemento1);
                         trElemento.appendChild(tdElemento2);
                         trElemento.appendChild(tdElemento3);
                         trElemento.appendChild(tdElemento4);
                         trElemento.appendChild(tdElemento5);
-                        //trElemento.appendChild(tdElemento6);
 
                         elementoTable.appendChild(trElemento);
                     }

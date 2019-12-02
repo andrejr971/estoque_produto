@@ -33,6 +33,53 @@
             </div>
         </div>
         <div class="card-body">
+            <div class="row mt-3 mb-3">
+                <div class="col">
+                    <div class="card">
+                        <div style="height: 5px;" class="bg-primary"></div>
+                        <div class="card-body" >
+                            <h3 class="card-title text-center" id="itens"></h3>
+                            <a href="/estoque/ver" class="btn btn-outline-primary w-100">Estoque</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card">
+                        <div style="height: 5px;" class="bg-warning"></div>
+                        <div class="card-body">
+                            <h3 class="card-title text-center" id="chapas"></h3>
+                            <a href="#" class="btn btn-outline-warning w-100">Estoque</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="card">
+                        <div style="height: 5px;" class="bg-info"></div>
+                        <div class="card-body">
+                            <h3 class="card-title text-center" id="inflamaveis"></h3>
+                            <a href="#" class="btn btn-outline-info w-100">Estoque</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card">
+                        <div style="height: 5px;" class="bg-success"></div>
+                        <div class="card-body">
+                            <h3 class="card-title text-center" id="geral"></h3>
+                            <a href="#" class="btn btn-outline-success w-100">Estoque</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card">
+                        <div style="height: 5px;" class="bg-secondary"></div>
+                        <div class="card-body">
+                            <h3 class="card-title text-center" id="textil"></h3>
+                            <a href="#" class="btn btn-outline-secondary w-100">Estoque</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col">
                     <div class="card">
@@ -53,6 +100,9 @@
                                 </tbody>
                             </table>
 
+                        </div>
+                        <div class="card-footer">
+                            <a href="#" class="btn btn-outline-success w-100">Ver mais</a>
                         </div>
                     </div>
                 </div>
@@ -129,6 +179,48 @@
             .catch(function(erro) {
                 alert(erro);
             });
+        }
+
+        axios.get('/api/estoque')
+                .then(function(response) {
+                    countItens(response.data);
+                })
+                .catch(function(erro) {
+                    alert(erro);
+                });
+
+        function countItens(contador) {
+            let cont1 = 0;
+            let cont2 = 0;
+            let cont3 = 0;
+            let cont4 = 0;
+
+            for(cont of contador) {
+
+                for(tipo of cont.fornecedores) {
+                    if(tipo.pivot.tipo_estoque_id == 1) {
+                        cont1 ++;
+                    } else if(tipo.pivot.tipo_estoque_id == 2) {
+                        cont2 ++;
+                    } else if(tipo.pivot.tipo_estoque_id == 3) {
+                        cont3 ++;
+                    } else if(tipo.pivot.tipo_estoque_id == 4) {
+                        cont4 ++;
+                    }
+                }
+            }
+
+            var valor = 'Total : ' + contador.length;
+            var valor1 = 'Chapas : ' + cont1;
+            var valor2 = 'Inflamáveis : ' + cont2;
+            var valor3  = 'Geral : ' + cont3;
+            var valor4  = 'Textil : ' + cont4;
+
+            $('#itens').append(valor);
+            $('#chapas').append(valor1);
+            $('#inflamaveis').append(valor2);
+            $('#geral').append(valor3);
+            $('#textil').append(valor4);
         }
 
         chamarRenderTabela();

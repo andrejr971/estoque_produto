@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Fornecedor;
+use App\Models\Estoque_geral;
+use App\Models\Estoque;
 
 class ContoladorFornecedor extends Controller
 {
@@ -15,12 +17,15 @@ class ContoladorFornecedor extends Controller
 
     public function indexView()
     {
-        return view('fornecedor.index');
+        $estantes = ['Escritório', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        return view('fornecedor.index',  [
+            'estantes' => $estantes
+        ]);
     }
 
     public function index()
     {
-        $fornecedores = Fornecedor::all();
+        $fornecedores = Fornecedor::with('estoque')->get();
         return $fornecedores->toJson();
     }
 
@@ -129,8 +134,16 @@ class ContoladorFornecedor extends Controller
      */
     public function destroy($id)
     {
+        $itens = Estoque::where('fornecedor_id', $id)->get();
         $fornecedor = Fornecedor::find($id);
+
         if(isset($fornecedor)) {
+            for ($i=0; $i < count($itens); $i++) { 
+                $estoque = Estoque_geral::find($itens[$i]->estoque_geral_id);
+                $estoque->fornecedores()->detach($id);
+
+                $estoque->delete();
+            }
             $fornecedor->delete();
             return response('OK', 200);
         }

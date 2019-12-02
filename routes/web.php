@@ -15,11 +15,15 @@ Route::get('/', function () {
     return view('index');
 });
 
-
 Route::prefix('/estoque')->group(function() {
     Route::get('/', [
         'as' => 'Estoque',
         'uses' => 'ContoladorEstoque@indexView'
+    ]);
+
+    Route::put('/{id}', [
+        'as' => 'atualizarEstoque',
+        'uses' => 'ContoladorEstoque@update'
     ]);
 
     Route::get('/ver', [
@@ -31,6 +35,21 @@ Route::prefix('/estoque')->group(function() {
         Route::get('/chapa', [
             'as' => 'addItemEstoqueChapa',
             'uses' => 'ContoladorEstoque@create'
+        ]);
+
+        Route::get('/inflamaveis', [
+            'as' => 'addItemEstoqueInfla',
+            'uses' => 'ContoladorEstoque@createInfla'
+        ]);
+
+        Route::get('/geral', [
+            'as' => 'addItemEstoqueGeral',
+            'uses' => 'ContoladorEstoque@createGeral'
+        ]);
+
+        Route::get('/textil', [
+            'as' => 'addItemEstoqueTextil',
+            'uses' => 'ContoladorEstoque@createTextil'
         ]);
     });
     

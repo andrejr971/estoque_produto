@@ -26,7 +26,7 @@
                 <a class="nav-link" href="/estoque">Estoque</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Preços</a>
+                <a class="nav-link" href="/fornecedor">Fornecedor</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link disabled" href="#">Desativado</a>
@@ -35,6 +35,14 @@
         </div>
     </nav>
     <div class="container mt-3">
+        @if (session('resul'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <h3 class="text-center">{{ session('resul') }}</h3>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
         @hasSection ('conteudo')
             @yield('conteudo')
         @endif

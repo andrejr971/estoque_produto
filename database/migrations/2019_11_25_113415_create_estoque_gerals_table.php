@@ -21,10 +21,10 @@ class CreateEstoqueGeralsTable extends Migration
             $table->string('ncm_item')->nullable();
             $table->string('estante')->nullable();
             $table->string('un_medida');
-            $table->integer('qtd');
+            $table->float('qtd');
             $table->integer('estoque_min');
             $table->integer('estoque_max');
-            $table->float('vol')->nullable();
+            $table->string('vol')->nullable();
             $table->string('espessura')->nullable();
             $table->integer('largura')->nullable();
             $table->integer('altura')->nullable();
@@ -32,6 +32,7 @@ class CreateEstoqueGeralsTable extends Migration
             $table->integer('reservado')->nullable();
             $table->integer('pedido')->nullable();
             $table->float('metragem')->nullable();
+            $table->string('oc')->nullable();
             $table->float('preco');
             $table->timestamps();
         });
