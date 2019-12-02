@@ -26,6 +26,38 @@ class ContoladorEstoque extends Controller
         ]);
     }
 
+    public function verEstoqueChapas() {
+        $estantes = ['Escritório', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        return view('estoque.ver.estoqueChapa', [
+            'estantes' => $estantes
+        ]);
+    }
+
+    public function verEstoqueInflamaveis() {
+        $estantes = ['Escritório', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        return view('estoque.ver.estoqueCola', [
+            'estantes' => $estantes
+        ]);
+    }
+
+    public function verEstoqueGeral() {
+        $estantes = ['Escritório', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        return view('estoque.ver.estoqueGeral', [
+            'estantes' => $estantes
+        ]);
+    }
+
+    public function verEstoqueTecido() {
+        $estantes = ['Escritório', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        return view('estoque.ver.estoqueTextil', [
+            'estantes' => $estantes
+        ]); 
+    }
+
+    public function verEstoqueBaixo() {
+        return view('estoque.ver.estoqueBaixo');
+    }
+
     public function index()
     {
         $estoque = Estoque_geral::with('fornecedores')->get();

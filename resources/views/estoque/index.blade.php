@@ -48,7 +48,7 @@
                         <div style="height: 5px;" class="bg-warning"></div>
                         <div class="card-body">
                             <h3 class="card-title text-center" id="chapas"></h3>
-                            <a href="#" class="btn btn-outline-warning w-100">Estoque</a>
+                            <a href="/estoque/verChapas" class="btn btn-outline-warning w-100">Estoque</a>
                         </div>
                     </div>
                 </div>
@@ -57,7 +57,7 @@
                         <div style="height: 5px;" class="bg-info"></div>
                         <div class="card-body">
                             <h3 class="card-title text-center" id="inflamaveis"></h3>
-                            <a href="#" class="btn btn-outline-info w-100">Estoque</a>
+                            <a href="/estoque/verInflamaveis" class="btn btn-outline-info w-100">Estoque</a>
                         </div>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                         <div style="height: 5px;" class="bg-success"></div>
                         <div class="card-body">
                             <h3 class="card-title text-center" id="geral"></h3>
-                            <a href="#" class="btn btn-outline-success w-100">Estoque</a>
+                            <a href="/estoque/verGeral" class="btn btn-outline-success w-100">Estoque</a>
                         </div>
                     </div>
                 </div>
@@ -75,7 +75,7 @@
                         <div style="height: 5px;" class="bg-secondary"></div>
                         <div class="card-body">
                             <h3 class="card-title text-center" id="textil"></h3>
-                            <a href="#" class="btn btn-outline-secondary w-100">Estoque</a>
+                            <a href="/estoque/verTecido" class="btn btn-outline-secondary w-100">Estoque</a>
                         </div>
                     </div>
                 </div>
@@ -126,11 +126,62 @@
                             </table>
                         </div>
                         <div class="card-footer">
-                            <a href="#" class="btn btn-outline-danger w-100">Ver mais</a>
+                            <a href="/estoque/verBaixo" class="btn btn-outline-danger w-100">Ver mais</a>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="row mt-3">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header bg-secondary text-light">
+                                <h2 class="card-title">Ordem de Compra (OC)</h2>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm table-bordered table-striped table-responsive-sm">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Fornecedor</th>
+                                            <th>Autor</th>
+                                            <th>Data</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+    
+                                    </tbody>
+                                </table>
+    
+                            </div>
+                            <div class="card-footer">
+                                <a href="#" class="btn btn-outline-secondary w-100">Ver mais</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-header bg-warning text-light">
+                                <h2 class="card-title">Produtos com baixo Estoque</h2>
+                            </div>
+                            <div class="card-body">
+                                <table id="" class="table table-sm table-bordered table-striped table-responsive-sm">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Produto</th>
+                                            <th>QTD/UN</th>
+                                            <th>Fornecedor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="card-footer">
+                                <a href="#" class="btn btn-outline-warning w-100">Ver mais</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
         </div>
     </div>
 @endsection
@@ -166,7 +217,7 @@
                     tabelaElemento.appendChild(trElemento);
                 }
 
-                if(i === 2) {
+                if(i === 3) {
                     break;
                 }
             }

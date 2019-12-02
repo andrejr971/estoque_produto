@@ -31,6 +31,31 @@ Route::prefix('/estoque')->group(function() {
         'uses' => 'ContoladorEstoque@verEstoque'
     ]);
 
+    Route::get('/verChapas', [
+        'as' => 'verEstoque',
+        'uses' => 'ContoladorEstoque@verEstoqueChapas'
+    ]);
+
+    Route::get('/verInflamaveis', [
+        'as' => 'verEstoque',
+        'uses' => 'ContoladorEstoque@verEstoqueInflamaveis'
+    ]);
+
+    Route::get('/verGeral', [
+        'as' => 'verEstoque',
+        'uses' => 'ContoladorEstoque@verEstoqueGeral'
+    ]);
+
+    Route::get('/verTecido', [
+        'as' => 'verEstoque',
+        'uses' => 'ContoladorEstoque@verEstoqueTecido'
+    ]);
+
+    Route::get('/verBaixo', [
+        'as' => 'verEstoque',
+        'uses' => 'ContoladorEstoque@verEstoqueBaixo'
+    ]);
+
     Route::prefix('/addItem')->group(function() {
         Route::get('/chapa', [
             'as' => 'addItemEstoqueChapa',
