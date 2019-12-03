@@ -52,8 +52,13 @@ Route::prefix('/estoque')->group(function() {
     ]);
 
     Route::get('/verBaixo', [
-        'as' => 'verEstoque',
+        'as' => 'verEstoqueBaixo',
         'uses' => 'ContoladorEstoque@verEstoqueBaixo'
+    ]);
+
+    Route::get('/gerarPDF', [
+        'as' => 'gerarPDF',
+        'uses' => 'ContoladorEstoque@gerarPDF'
     ]);
 
     Route::prefix('/addItem')->group(function() {
@@ -76,6 +81,38 @@ Route::prefix('/estoque')->group(function() {
             'as' => 'addItemEstoqueTextil',
             'uses' => 'ContoladorEstoque@createTextil'
         ]);
+    });
+
+    Route::prefix('/carrinhoEstoque')->group( function() {
+        
+        Route::get('/', [
+            'as' => 'carrinhoPedido',
+            'uses' => 'ControladorPedidoEstoque@index'
+        ]);
+
+        Route::delete('/removerItemPedido', [
+            'as' => 'removerItemPedido',
+            'uses' => 'ControladorPedidoEstoque@deletarItem'
+        ]);
+
+        Route::put('/addItemPedido', [
+            'as' => 'addItemPedido',
+            'uses' => 'ControladorPedidoEstoque@addItem'
+        ]);
+
+        Route::put('/dimItemPedido', [
+            'as' => 'dimItemPedido',
+            'uses' => 'ControladorPedidoEstoque@dimItem'
+        ]);
+
+        Route::post('/addTudoFornecedor', [
+            'as' => 'addTudoFornecedor',
+            'uses' => 'ControladorPedidoEstoque@addTudoFornecedor'
+        ]);
+    });
+
+    Route::get('/adicionarPedido', function() {
+        return redirect()->route('verEstoqueBaixo');
     });
     
 });

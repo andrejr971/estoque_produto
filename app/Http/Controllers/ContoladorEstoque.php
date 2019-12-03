@@ -58,6 +58,15 @@ class ContoladorEstoque extends Controller
         return view('estoque.ver.estoqueBaixo');
     }
 
+    //Gerar PDF
+    public function gerarPDF()
+    {
+        return \PDF::loadView('estoque.pdf.PDFEstoqueB', [
+            'estoque' => Estoque_geral::with('fornecedores')->get(),
+        ])->setPaper('a4', 'landscape')
+                    ->stream('nome-arquivo-pdf-gerado.pdf');
+    }
+
     public function index()
     {
         $estoque = Estoque_geral::with('fornecedores')->get();

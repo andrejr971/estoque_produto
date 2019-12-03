@@ -17,6 +17,15 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/adicionarPedido', function() {
+    return redirect()->route('verEstoqueBaixo');
+});
+
+Route::post('/adicionarPedido', [
+    'as' => 'addApiPedido',
+    'uses' => 'ControladorPedidoEstoque@addPedido'
+]);
+
 Route::resource('/fornecedor', 'ContoladorFornecedor');
 
 Route::resource('/estoque', 'ContoladorEstoque');

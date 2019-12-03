@@ -8,7 +8,12 @@
                     <h1 class="card-title"> Itens com baixo estoque </h1>
                 </div>
                 <div class="col-3">
-                    <a href="#" class="btn btn-outline-success w-100">Gerar Lista de Compra</a>
+                    <a href="{{ route("carrinhoPedido") }}" class="btn btn-outline-info w-100">
+                        Pedidos
+                    </a>
+                </div>
+                <div class="col-3">
+                    <a href="/estoque/gerarPDF" target="blank" class="btn btn-outline-success w-100">Gerar Lista de Compra</a>
                 </div>
             </div>
         </div>
@@ -27,156 +32,253 @@
                     </div>
                 </div>
             </div>
-            <table id="tabelaEstoque" class="table table-sm table-bordered table-striped table-responsive-sm">
-                <thead class="thead-light">
-                    <tr>
-                        <th>ID</th>
-                        <th>Descrição</th>
-                        <th>Grupo</th>
-                        <th>Código</th>
-                        <th>QTD</th>
-                        <th>Estante</th>
-                        <th>Fornecedores</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-                </tbody>
-            </table>
+            <div id="tabela">
+
+            </div>
         </div>
     </div>
-    <div class="modal fade" id="modalTipo" tabindex="-1" role="dialog" aria-labelledby="tipoModal" aria-hidden="true">
+
+    <div class="modal fade" id="modalQtd" tabindex="-1" role="dialog" aria-labelledby="tipoModal" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <form class="form-horizontal" id="formTipo">
+            <form class="form-horizontal" id="formPedido">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="tipoModal">Escolha uma opção</h5>
+                        <h5 class="modal-title" id="tipoModal">Pedido</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
                         <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="tipo" id="tipo1" value="1" checked>
-                            <label class="form-check-label" for="tipo1">
-                                Adicionar Estoque de Chapas
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="tipo" id="tipo2" value="2">
-                            <label class="form-check-label" for="tipo2">
-                                Adicionar Estoque de Inflamaveis
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="tipo" id="tipo3" value="3">
-                            <label class="form-check-label" for="tipo3">
-                                Adicionar Estoque Geral
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="tipo" id="tipo4" value="4">
-                            <label class="form-check-label" for="tipo4">
-                                Adicionar Estoque Tecido/Costura
-                            </label>
+                        <div class="form-group">
+                            <input type="hidden" name="estoque_id" id="estoque_id">
+                            <input type="hidden" name="fornecedor_id" id="fornecedor_id">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="qtd">Quantidade</label>
+                                    <input type="number" id="qtd" name="qtd" value="1" class="form-control">    
+                                </div>
+                                <div class="col">
+                                    <label for="min">Estoque Min.</label>
+                                    <input type="number" id="min" name="min" value="1" class="form-control" disabled>    
+                                </div>  
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="usarMin">
+                                <label class="form-check-label" for="usarMin">
+                                    Usar estoque Minimo
+                                </label>
+                            </div>                        
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Fechar</button>
-                        <button type="submit" class="btn btn-outline-primary">Confirmar</button>
+                        <button type="submit" class="btn btn-outline-primary">Adicionar</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
+    <form id="form_add" method="POST" action="{{ route("addTudoFornecedor") }}">
+        @csrf
+        <input type="hidden" name="fornecedor_id">
+    </form>
+    
 @endsection
 
 @section('javascript')
     <script>
-        $('#formTipo').submit(function(event) {
-            event.preventDefault();
-
-            if($('#tipo1').prop('checked')) {
-                window.location.href = '{{ route("addItemEstoqueChapa") }}';
-            } else if ($('#tipo2').prop('checked')) {
-                window.location.href = '{{ route("addItemEstoqueInfla") }}';
-            } else if ($('#tipo3').prop('checked')) {
-                window.location.href = '{{ route("addItemEstoqueGeral") }}';
-            } else if ($('#tipo4').prop('checked')) {
-                window.location.href = '{{ route("addItemEstoqueTextil") }}';
-            } else {
-                alert('Selecione uma opção');
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
 
-        var elementoTable = document.querySelector('#tabelaEstoque tbody');
+        function mostrarModal(id) {
+            axios.get('/api/estoque')
+                .then( function(response) {
+                    pedir(response.data, id);
+                })
+                .catch( function(erro) {
+                    alert(erro);
+                })
+        }
 
-        function renderChapas(dados) {
-            //console.log(dados);
-                elementoTable.innerHTML = '';
-                for(dado of dados) {
-                    if(dado.qtd <= 1) {
+        function pedir(dados, id) {
+            for(dado of dados) {
+                if(dado.id === id) {
+                    $('#estoque_id').val(dado.id);
+                    $('#min').val(dado.estoque_min);
 
-                        var trElemento = document.createElement('tr');
-                        var tdElemento1 = document.createElement('td');
-                        var tdElemento2 = document.createElement('td');
-                        var tdElemento3 = document.createElement('td');
-                        var tdElemento4 = document.createElement('td');
-                        var tdElemento5 = document.createElement('td');
-                        var tdElemento6 = document.createElement('td');
-                        var tdElemento7 = document.createElement('td');
-
-                        var texto1 = document.createTextNode(dado.id);
-                        var texto2 = document.createTextNode(dado.descricao);
-                        var texto4 = document.createTextNode(dado.cod_item);
-                        var texto5 = document.createTextNode(dado.qtd + ' ' + dado.un_medida);
-                        for(tipo of dado.fornecedores) {
-                            if(tipo.pivot.tipo_estoque_id === 1) {
-                                var texto3 = document.createTextNode('CHAPAS');
-                            } else if (tipo.pivot.tipo_estoque_id === 2) {
-                                var texto3 = document.createTextNode('INFLAMÁVEIS'); 
-                            } else if (tipo.pivot.tipo_estoque_id === 3) {
-                                var texto3 = document.createTextNode('GERAL'); 
-                            } else {
-                                var texto3 = document.createTextNode('TEXTIL');
-                            }
-                        }
-
-                        if(dado.estante === null) {
-                            var texto6 = document.createTextNode('#');
-                        } else {
-                            var texto6 = document.createTextNode(dado.estante);
-                        }
-
-                        for(fornecedor of dado.fornecedores) {
-                            var texto7 = document.createTextNode(fornecedor.nome);
-                        }
-                        tdElemento1.appendChild(texto1);
-                        tdElemento2.appendChild(texto2);
-                        tdElemento3.appendChild(texto3);
-                        tdElemento4.appendChild(texto4);
-                        tdElemento5.appendChild(texto5);
-                        tdElemento6.appendChild(texto6);
-                        tdElemento7.appendChild(texto7);
-
-                        trElemento.appendChild(tdElemento1);
-                        trElemento.appendChild(tdElemento2);
-                        trElemento.appendChild(tdElemento3);
-                        trElemento.appendChild(tdElemento4);
-                        trElemento.appendChild(tdElemento5);
-                        trElemento.appendChild(tdElemento6);
-                        trElemento.appendChild(tdElemento7);
-
-                        elementoTable.appendChild(trElemento);
+                    for(f of dado.fornecedores) {
+                        $('#fornecedor_id').val(f.id);
                     }
-                    
                 }
+            }
+            $('#modalQtd').modal('show');
+        }
+
+        function pedirTudo(fornecedor_id) {
+            $('#form_add input[name="fornecedor_id"]').val(fornecedor_id);
+            $('#form_add').submit();
+        }
+
+        $('#formPedido').submit(function(event) {
+            event.preventDefault();
+
+            if($('#usarMin').prop('checked')) {
+                item = {
+                    estoque_geral_id : $('#estoque_id').val(),
+                    fornecedor_id : $('#fornecedor_id').val(),
+                    qtd : $('#min').val()
+                }
+            } else {
+                item = {
+                    estoque_geral_id : $('#estoque_id').val(),
+                    fornecedor_id : $('#fornecedor_id').val(),
+                    qtd : $('#qtd').val()
+                }
+            }
+
+            $.post('{{ route("addApiPedido") }}', item, function() {
+                alert('Item Add');
+            });
+            $('#modalQtd').modal('hide');
+
+        });
+
+        var divTabela = document.querySelector('#tabela');
+
+        function renderTabela(dados) {
+            cont = 0;
+
+            for(dado of dados) {
+                var elementoH5 = document.createElement('h5');
+                var elementoTabela = document.createElement('table');
+                var elementoTabelaThead = document.createElement('thead');
+                var elementoTabelaTbody = document.createElement('tbody');
+
+                elementoTabela.setAttribute('class', 'table table-sm table-bordered table-striped table-responsive-sm');
+                elementoTabelaThead.setAttribute('class', 'thead-light');
+
+                var elementoTR = document.createElement('tr');
+                var elementoth1 = document.createElement('th');
+                var elementoth2 = document.createElement('th');
+                var elementoth3 = document.createElement('th');
+                var elementoth4 = document.createElement('th');
+                var elementoth5 = document.createElement('th');
+                var elementoth7 = document.createElement('th');
+
+                var textoTh1 = document.createTextNode('Código');
+                var textoTh2 = document.createTextNode('Descrição');
+                var textoTh3 = document.createTextNode('Grupo');
+                var textoTh4 = document.createTextNode('Qtd');
+                var textoTh5 = document.createTextNode('Estante');
+                var textoTh7 = document.createTextNode('#');
+
+                elementoth1.appendChild(textoTh1);
+                elementoth2.appendChild(textoTh2);
+                elementoth3.appendChild(textoTh3);
+                elementoth4.appendChild(textoTh4);
+                elementoth5.appendChild(textoTh5);
+                elementoth7.appendChild(textoTh7);
+
+                elementoTR.appendChild(elementoth1);
+                elementoTR.appendChild(elementoth2);
+                elementoTR.appendChild(elementoth3);
+                elementoTR.appendChild(elementoth4);
+                elementoTR.appendChild(elementoth5);
+                elementoTR.appendChild(elementoth7);
+
+                elementoTabelaThead.appendChild(elementoTR);
+
+                for(item of dado.estoque) {
+                    if(item.qtd <= 1) {
+                        var elementoTr = document.createElement('tr');
+                        var elementoTd1 = document.createElement('td');
+                        var elementoTd2 = document.createElement('td');
+                        var elementoTd3 = document.createElement('td');
+                        var elementoTd4 = document.createElement('td');
+                        var elementoTd5 = document.createElement('td');
+                        var elementoTd6 = document.createElement('td');
+
+                        var textoT1 = document.createTextNode(item.cod_item);
+                        var textoT2 = document.createTextNode(item.descricao);
+                        if(item.pivot.tipo_estoque_id === 1) {
+                            var textoT3 = document.createTextNode('CHAPAS');
+                        } else if (item.pivot.tipo_estoque_id === 2) {
+                            var textoT3 = document.createTextNode('INFLAMÁVEIS'); 
+                        } else if (item.pivot.tipo_estoque_id === 3) {
+                            var textoT3 = document.createTextNode('GERAL'); 
+                        } else {
+                            var textoT3 = document.createTextNode('TEXTIL');
+                        }
+                        var textoT4 = document.createTextNode(item.qtd);
+                        if(item.estante == null) {
+                            var textoT5 = document.createTextNode('#');
+                        } else {
+                            var textoT5 = document.createTextNode(item.estante);
+                        }
+
+                        var btnPedido = document.createElement('button');
+                        var textoBtn2 = document.createTextNode('Pedir');
+                        btnPedido.setAttribute('onclick', 'mostrarModal(' + item.id + ')');
+                        btnPedido.setAttribute('class', 'btn btn-outline-info w-100');
+                        btnPedido.appendChild(textoBtn2);
+                        
+                        elementoTd1.appendChild(textoT1);
+                        elementoTd2.appendChild(textoT2);
+                        elementoTd3.appendChild(textoT3);
+                        elementoTd4.appendChild(textoT4);
+                        elementoTd4.appendChild(textoT4);
+                        elementoTd5.appendChild(textoT5);
+                        elementoTd6.appendChild(btnPedido);
+
+                        elementoTr.appendChild(elementoTd1);
+                        elementoTr.appendChild(elementoTd2);
+                        elementoTr.appendChild(elementoTd3);
+                        elementoTr.appendChild(elementoTd4);
+                        elementoTr.appendChild(elementoTd5);
+                        elementoTr.appendChild(elementoTd6);
+
+                        elementoTabelaTbody.appendChild(elementoTr);
+                    }
+                }
+
+                var textoH5 = document.createTextNode(dado.nome);
+                var btnPedidoF = document.createElement('button');
+                var textoPedido = document.createTextNode('Pedir Tudo');
+                btnPedidoF.setAttribute('onclick', 'pedirTudo(' + dado.id + ')');
+                btnPedidoF.setAttribute('class', 'btn btn-outline-info w-100');
+                btnPedidoF.appendChild(textoPedido);
+
+                var divRow = document.createElement('div');
+                var divCol1 = document.createElement('div');
+                var divCol2 = document.createElement('div');
+
+                divRow.setAttribute('class', 'row');
+                divCol1.setAttribute('class', 'col');
+                divCol2.setAttribute('class', 'col-3 mb-2');
+
+                elementoH5.appendChild(textoH5);
+                elementoH5.setAttribute('class', 'text-center border-bottom mt-3');
+
+                divCol1.appendChild(elementoH5);
+                divCol2.appendChild(btnPedidoF);
+                divRow.appendChild(divCol1);
+                divRow.appendChild(divCol2);
+
+                elementoTabela.appendChild(elementoTabelaThead);
+                elementoTabela.appendChild(elementoTabelaTbody);
+
+                divTabela.appendChild(divRow);
+                divTabela.appendChild(elementoTabela);
+            }
         }
 
         function chamarRender() {
-            axios.get('/api/estoque')
+            axios.get('/api/fornecedor')
             .then(function(response) {
-                renderChapas(response.data);
+                renderTabela(response.data);
             })
             .catch(function(erro) {
                 alert(erro);

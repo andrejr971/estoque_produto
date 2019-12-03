@@ -8,7 +8,8 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href=" {{ asset('css/app.css') }} " >
-
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    
     <title>Teste</title>
   </head>
   <body>
