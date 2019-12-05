@@ -13,6 +13,9 @@ use Illuminate\Http\Request;
 |
 */
 
+use Illuminate\Support\Facades\Route;
+
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -24,6 +27,21 @@ Route::get('/adicionarPedido', function() {
 Route::post('/adicionarPedido', [
     'as' => 'addApiPedido',
     'uses' => 'ControladorPedidoEstoque@addPedido'
+]);
+
+Route::get('/pedidosAberto/{id}', [
+    'as' => 'apiPedidos',
+    'uses' => 'ControladorPedidoEstoque@indexApi'
+]);
+
+Route::get('/pedidosAberto', [
+    'as' => 'apiPedidos2',
+    'uses' => 'ControladorPedidoEstoque@indexApi2'
+]);
+
+Route::get('/enviarPedido/{id}', [
+    'as' => 'enviarPedido',
+    'uses' => 'ControladorPedidoEstoque@enviarPedido'
 ]);
 
 Route::resource('/fornecedor', 'ContoladorFornecedor');

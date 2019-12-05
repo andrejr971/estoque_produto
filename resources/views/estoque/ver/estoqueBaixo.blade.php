@@ -122,6 +122,21 @@
             $('#form_add').submit();
         }
 
+        function verificacao(dados, item) {
+            console.log(dados);
+            let teste = parseInt(item.estoque_geral_id);
+            if(dados === 0) {
+                $.post('{{ route("addApiPedido") }}', item, function() {
+                    alert('Item Add');
+
+                    $('#modalQtd').modal('hide');
+                });
+            } else {
+                alert('Item já está na lista');
+            $('#modalQtd').modal('hide');
+            }
+        }
+
         $('#formPedido').submit(function(event) {
             event.preventDefault();
 
@@ -139,11 +154,14 @@
                 }
             }
 
-            $.post('{{ route("addApiPedido") }}', item, function() {
-                alert('Item Add');
-            });
-            $('#modalQtd').modal('hide');
-
+            axios.get('/api/pedidosAberto/'+item.estoque_geral_id)
+                .then(function(response) {
+                    verificacao(response.data, item);
+                })
+                .catch(function(erro) {
+                    console.log(erro);
+                });
+           
         });
 
         var divTabela = document.querySelector('#tabela');
@@ -153,6 +171,7 @@
 
             for(dado of dados) {
                 var elementoH5 = document.createElement('h5');
+                var elementoA = document.createElement('a');
                 var elementoTabela = document.createElement('table');
                 var elementoTabelaThead = document.createElement('thead');
                 var elementoTabelaTbody = document.createElement('tbody');
@@ -259,7 +278,9 @@
                 divCol1.setAttribute('class', 'col');
                 divCol2.setAttribute('class', 'col-3 mb-2');
 
-                elementoH5.appendChild(textoH5);
+                elementoA.setAttribute('href', '/estoque/estoqueFornecedor/' + dado.id);
+                elementoA.appendChild(textoH5);
+                elementoH5.appendChild(elementoA);
                 elementoH5.setAttribute('class', 'text-center border-bottom mt-3');
 
                 divCol1.appendChild(elementoH5);
@@ -278,7 +299,7 @@
         function chamarRender() {
             axios.get('/api/fornecedor')
             .then(function(response) {
-                renderTabela(response.data);
+                return renderTabela(response.data);
             })
             .catch(function(erro) {
                 alert(erro);

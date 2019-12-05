@@ -18,7 +18,9 @@
                         <h4 class="card-title"> Pedido: {{ $pedido->id }} </h3>
                     </div>
                     <div class="col">
-                        <h4 class="card-title text-center"> <strong>Fornecedor: {{ $pedido->fornecedor->nome }}</strong> </h4>
+                        <h4 class="card-title text-center"> 
+                            <strong>Fornecedor: {{ $pedido->fornecedor->nome }}</strong>
+                        </h4>
                     </div>
                     <div class="col-3">
                         <h4 class="card-title"> Criado em: {{ $pedido->created_at->format('d/m/Y') }} </h4>
@@ -44,12 +46,16 @@
                                 <td>{{ $item->pedido_item_estoque->descricao }}</td>
                                 <td >
                                     <div class="row" style="max-width: 100px;">
-                                        <a href="#" style="width: 30px;{{ ($item->qtd <= 1) ? 'pointer-events: none;' : ''}}" onclick="diminuirItem({{ $item->id }})">
-                                            <i class='fas fa-minus-circle' style='font-size:20px; {{ ($item->qtd <= 1) ? 'color: gray;' : ''}}'></i>
+                                        <a href="#" style="width: 20px;{{ ($item->qtd <= 1) ? 'pointer-events: none;' : ''}}" onclick="diminuirItem({{ $item->id }})" data-toggle="popover" data-trigger="focus" title="Clique para diminuir">
+                                            <i class='fas fa-minus-circle mt-2' style='font-size:20px; {{ ($item->qtd <= 1) ? 'color: gray;' : ''}}'></i>
                                         </a>
-                                        <span class="text-center" style="width: 40px;">{{ $item->qtd }}</span>
-                                        <a href="#" style="width: 30px;" onclick="addItem({{ $item->id }})">
-                                            <i class='fas fa-plus-circle' style='font-size:20px'></i>
+                                        <span id="qtd" class="text-center" style="width: 40px;" data-toggle="popover" data-trigger="focus" title="Clique para abrir editar">
+                                            <a href="#" class="btn btn-light" onclick="abrirModal({{ $item->estoque_geral_id }})">
+                                                {{ $item->qtd }}
+                                            </a>
+                                        </span>
+                                        <a href="#" style="width: 20px;" onclick="addItem({{ $item->id }})"  data-toggle="popover" data-trigger="focus" title="Clique para aumentar">
+                                            <i class='fas fa-plus-circle mt-2 ml-1' style='font-size:20px'></i>
                                         </a>
                                     </div>
                                     <div class="row">
@@ -70,21 +76,26 @@
                         @endforeach
                     </tbody>
                 </table>
-                <div class="row">
+                <div class="row border-bottom mb-3">
                     <div class="col offset-9">
                         <strong>Total do Pedido : </strong>
                         <span>R$ {{ number_format($total_pedido, 2, ',', '.') }} </span>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col offset-6 ">
-                        <a href="#" class="btn btn-info w-100">
+                    <div class="col">
+                        <a href="/estoque/estoqueFornecedor/{{ $pedido->fornecedor->id }}" class="btn btn-info w-100">
                             Adicionar mais do Fornecedor
                         </a>
                     </div>
                     <div class="col">
-                        <a href="#" class="btn btn-success w-100">
+                        <a href="#" class="btn btn-success w-100" id="btnConcluir" onclick="conluir({{ $pedido->id }})">
                             Enviar/Finalizar
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="/estoque/carrinhoEstoque/excluirPedido/{{ $pedido->id }}" class="btn btn-danger w-100">
+                            Excluir Pedido
                         </a>
                     </div>
                 </div>
@@ -106,16 +117,119 @@
         @csrf
         @method('PUT')
         <input type="hidden" name="item_id">
+        <input type="hidden" name="quantidade0">
     </form>
     <form id="form_dim" method="POST" action="{{ route("dimItemPedido") }}">
         @csrf
         @method('PUT')
         <input type="hidden" name="item_id">
+        <input type="hidden" name="quantidade0">
     </form>
+
+    <div class="modal fade" id="modalQtd" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title">Quantidade</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" style="margin-left: 30%;">
+                        <input type="hidden" name="item_id" id="item_id2">
+                        <input type="hidden" name="pedido_id" id="pedido_id">
+                        <div class="row">
+                            <div class="col-7">
+                                <label for="quantidade1">Quantidade Pedido</label>
+                                <input type="number" id="quantidade1" name="qtd1" min="1" value="1" class="form-control" disabled>    
+                            </div>
+                        </div>  
+                        <div class="row">
+                            <div class="col-7">
+                                <label for="quantidade">Quantidade</label>
+                                <input type="number" id="quantidade" name="qtd" min="1" value="1" class="form-control">    
+                            </div>
+                        </div>                       
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-danger" id="btnRemover0">Remover</button>
+                    <button type="button" class="btn btn-primary" id="btnAdd0">Adicionar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalEmail" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <form action="{{ route('enviarEmail') }}" method="POST">
+                @csrf
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title">Enviar para: <label id="labelEmail"></label> </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input type="hidden" name="pedido_id2" id="pedido_id2">
+                            <div class="row">
+                                <div class="col">
+                                    <label for="email">E-mail do Fornecedor</label>
+                                    <input type="text" id="email" name="email" class="form-control" disabled>    
+                                    <input type="hidden" id="email2" name="email2">    
+                                </div>
+                            </div>  
+                            <div class="row">
+                                <div class="col">
+                                    <label for="assunto">Assunto</label>
+                                    <input type="text" id="assunto" name="assunto" class="form-control">    
+                                </div>
+                            </div>  
+                            <div class="row">
+                                <div class="col">
+                                    <label for="observacao">Observação</label>
+                                    <textarea name="observacao" id="observacao" cols="30" rows="5" maxlength="200" class="form-control"></textarea>  
+                                </div>
+                            </div>                        
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-success" id="btnEnviarEmail">Enviar</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 @endsection
 
 @section('javascript')
     <script>
+        var btnRemover0 = document.querySelector('#btnRemover0');
+        var btnAdd0 = document.querySelector('#btnAdd0');
+
+        function conluir(pedido_id) {
+            var elementoLabel = document.querySelector('#labelEmail');
+            elementoLabel.innerHTML = '';
+            $.get('/api/enviarPedido/'+pedido_id, function(data) {
+                dados = JSON.parse(data);
+
+                var textoLabel = document.createTextNode(dados[0].fornecedor.nome);
+                elementoLabel.appendChild(textoLabel);
+
+                $('#pedido_id2').val(dados[0].id);
+                $('#email').val(dados[0].fornecedor.email);
+                $('#email2').val(dados[0].fornecedor.email);
+                $('#assunto').val('Pedido de compras Ind. Inkasa');
+            });
+
+            $('#modalEmail').modal('show');
+        }
+
         function removerItem(pedido_id, estoque_geral_id, fornecedor_id, item) {
             $('#form_remover input[name="pedido_id"]').val(pedido_id);
             $('#form_remover input[name="estoque_geral_id"]').val(estoque_geral_id);
@@ -124,16 +238,59 @@
             $('#form_remover').submit();
         }
 
-        function addItem(estoque_geral_id) {
+        function addItem(estoque_geral_id, operacao) {
+            $('#modalQtd').modal('hide');
+
+            if(operacao == 0) {
+                $quantidaM = $('#quantidade').val();
+                //alert($quantidaM)
+                $('#form_add input[name="quantidade0"]').val($quantidaM);
+            } else {
+                $('#form_add input[name="quantidade0"]').val(1);
+            }
+
             $('#form_add input[name="item_id"]').val(estoque_geral_id);
             $('#form_add').submit();
         }
 
-        function diminuirItem(estoque_geral_id) {
+        function diminuirItem(estoque_geral_id, operacao) {
+            $('#modalQtd').modal('hide');
+            
+            if(operacao == 0) {
+                $quantidaM = $('#quantidade').val();
+                $('#form_dim input[name="quantidade0"]').val($quantidaM);
+            } else {
+                $('#form_dim input[name="quantidade0"]').val(1);
+            }
+
             $('#form_dim input[name="item_id"]').val(estoque_geral_id);
             $('#form_dim').submit();
         }
-        
+
+        function abrir(dados, id_item) {
+            for(dado of dados) {
+                if(dado.estoque_geral_id == id_item) {
+                    $('#item_id2').val(dado.estoque_geral_id);
+                    $('#pedido_id').val(dado.id);
+                    $('#quantidade1').val(dado.qtd);
+
+                    btnAdd0.setAttribute('onclick', 'addItem(' + dado.id + ', 0)');
+                    btnRemover0.setAttribute('onclick', 'diminuirItem(' + dado.id + ', 0)');
+                }
+            }
+            $('#modalQtd').modal('show');
+        }
+
+        function abrirModal(id_item) {
+            axios.get('/api/pedidosAberto')
+                .then(function(response) {
+                    abrir(response.data, id_item);
+                })
+                .catch(function(erro) {
+                    console.log('erro');
+                });
+        }
+
     </script>
 @endsection
 

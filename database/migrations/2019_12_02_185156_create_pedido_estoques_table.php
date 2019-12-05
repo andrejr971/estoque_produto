@@ -17,7 +17,7 @@ class CreatePedidoEstoquesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('fornecedor_id');
             $table->foreign('fornecedor_id')->references('id')->on('fornecedores');
-            $table->enum('status', ['RE', 'EN', 'CL']);
+            $table->enum('status', ['RE','EN','CL','CP','FP','OK']);
             $table->timestamps();
         });
     }

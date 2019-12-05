@@ -15,6 +15,7 @@ class PedidoItem extends Model
     ];
 
     public function pedido_item_estoque() {
-        return $this->belongsTo('App\Models\Estoque_geral', 'estoque_geral_id', 'id');
+        return $this->belongsTo('App\Models\Estoque_geral', 'estoque_geral_id', 'id')
+            ->select('id', 'descricao', 'qtd', 'estoque_min', 'preco');
     }
 }

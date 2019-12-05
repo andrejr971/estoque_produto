@@ -21,7 +21,7 @@ class CreatePedidoItemsTable extends Migration
             $table->foreign('estoque_geral_id')->references('id')->on('estoque_geral');
             $table->integer('qtd')->default(1);
             $table->decimal('valor', 6, 2)->default(0);
-            $table->enum('status', ['RE', 'EN', 'CL']);
+            $table->enum('status', ['RE','EN','CL','CP','FP','OK']);
             $table->timestamps();
         });
     }

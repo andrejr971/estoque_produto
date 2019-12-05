@@ -11,6 +11,8 @@
 |
 */
 
+use Illuminate\Support\Facades\Route;
+
 Route::get('/', function () {
     return view('index');
 });
@@ -109,12 +111,26 @@ Route::prefix('/estoque')->group(function() {
             'as' => 'addTudoFornecedor',
             'uses' => 'ControladorPedidoEstoque@addTudoFornecedor'
         ]);
+
+        Route::get('/excluirPedido/{id}', [
+            'as' => 'excluirPedido',
+            'uses' => 'ControladorPedidoEstoque@destroy'
+        ]);
+
+        Route::post('/enviarEmail', [
+            'as' => 'enviarEmail',
+            'uses' => 'ControladorPedidoEstoque@enviarEmail'
+        ]);
     });
 
     Route::get('/adicionarPedido', function() {
         return redirect()->route('verEstoqueBaixo');
     });
     
+    Route::get('/estoqueFornecedor/{id}', [
+        'as' => 'estoqueFornecedor',
+        'uses' => 'ControladorPedidoEstoque@estoqueFornecedor'
+    ]);
 });
 
 Route::get('/fornecedor', [

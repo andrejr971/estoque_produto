@@ -23,6 +23,16 @@ class PedidoEstoque extends Model
         return $this->belongsTo('App\Models\Fornecedor', 'fornecedor_id', 'id');
     }
 
+    public function consultaFornecedor($fornecedor_id) {
+        $pedido = PedidoEstoque::with('fornecedor')->where('id', $fornecedor_id)->get();
+        
+        if(count($pedido) == 0) {
+            return response('Página não encontrada', 404);
+        }
+
+        return $pedido;
+    }
+
     public function consultaId($where) {
         $pedido = PedidoEstoque::where($where)->first(['id']);
         return !empty($pedido->id) ? $pedido->id : null;
