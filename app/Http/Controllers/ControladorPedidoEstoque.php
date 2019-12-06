@@ -66,7 +66,14 @@ class ControladorPedidoEstoque extends Controller
             $message->subject($assunto);
         });
 
-        //$itens_pedido->status;
+        foreach ($itens_pedido as $item) {
+            $item->status = 'EN';
+            $item->save();
+        }
+
+        $pedidoEstoque = PedidoEstoque::find($request->input('pedido_id2'));
+        $pedidoEstoque->status = 'EN';
+        $pedidoEstoque->save();
 
         return redirect()->route('carrinhoPedido')->with('resul', 'E-mail enviado com sucesso');
         //return $dados;
@@ -174,7 +181,7 @@ class ControladorPedidoEstoque extends Controller
         $item->qtd = $qtd + $qtdAdd;
         $item->save();
 
-        return redirect()->route('carrinhoPedido');
+        return redirect()->back()->with('ativo', $item->pedido_estoque_id);
     }
 
     public function dimItem(Request $request) {
@@ -188,7 +195,7 @@ class ControladorPedidoEstoque extends Controller
         $item->qtd = $qtd - $qtdRem;
         $item->save();
 
-        return redirect()->route('carrinhoPedido');
+        return redirect()->back()->with('ativo', $item->pedido_estoque_id);
     }
 
     public function deletarItem(Request $request) {
@@ -206,7 +213,7 @@ class ControladorPedidoEstoque extends Controller
         ]);
 
         if(empty($pedido_id)) {
-            return redirect()->route('carrinhoPedido')->with('resul', 'Pedido não encontrado');
+            return redirect()->back()->with(['resul' => 'Item não encontrado', 'ativo' => $pedido_id]);
         }
 
         $where_item = [
@@ -216,7 +223,7 @@ class ControladorPedidoEstoque extends Controller
 
         $item = PedidoItem::where($where_item)->orderBy('id', 'desc')->first();
         if(empty($item->id)) {
-            return redirect()->route('carrinhoPedido')->with('resul', 'Item não encontrado');
+            return redirect()->back()->with(['resul' => 'Item não encontrado', 'ativo' => $pedido_id]);
         }
 
         if($remover_apenas_item) {
@@ -234,7 +241,7 @@ class ControladorPedidoEstoque extends Controller
             ])->delete();
     
         }
-        return redirect()->route('carrinhoPedido')->with('resul', 'Item exluido');
+        return redirect()->back()->with(['resul' => 'Item não encontrado', 'ativo' => $pedido_id]);
     }
 
     public function estoqueFornecedor($id) {
@@ -245,6 +252,109 @@ class ControladorPedidoEstoque extends Controller
         return view('estoque.ver.estoqueFornecedor', [
             'estoque' => $estoqueFor
         ]);
+    }
+
+    //estados dos pedidos
+    public function pedidosEstoqueEN() {
+        $pedido = PedidoEstoque::with('pedido_item')->where([
+            'status' => 'EN'
+        ])->get();
+
+        //return $pedido;
+
+        return view('estoque.pedido.enviados', [
+            'pedidos' => $pedido
+        ]);
+    }
+
+    public function pedidosEstoqueCP() {
+        $pedido = PedidoEstoque::with('pedido_item')->where([
+            'status' => 'CP'
+        ])->get();
+
+        return view('estoque.pedido.autorizados', [
+            'pedidos' => $pedido
+        ]);
+    }
+
+    public function pedidosEstoqueFP() {
+        $pedido = PedidoEstoque::with('pedido_item')->where([
+            'status' => 'FP'
+        ])->get();
+
+        return view('estoque.pedido.finalizados', [
+            'pedidos' => $pedido
+        ]);
+    }
+
+    public function pedidosEstoqueCpId(Request $request) {
+        $pedido_id = $request->input('pedido_id');
+
+        $pedido = PedidoEstoque::find($pedido_id);
+
+        if(isset($pedido_id)) {
+            $pedidoItem = PedidoItem::where('pedido_estoque_id', $pedido_id)->get();
+
+            foreach($pedidoItem as $item) {
+                $item->status = 'CP';
+                $item->save();
+            }
+
+            $arquivo = $request->file('upFile');
+
+            if(!empty($arquivo)) {
+                $path = $request->file('upFile')->store('anexos', 'public');
+                $pedido->anexo = $path;
+            }
+            
+            $pedido->status = 'CP';
+            $pedido->save();
+
+            return redirect()->route('pedidosEstoqueEN')->with('resul' ,'Pedido Autorizado');
+        }
+
+        return redirect()->route('pedidosEstoqueEN')->with('resul', 'Falha ao autorizar');
+    }
+
+    public function pedidosEstoqueAtId(Request $request) {
+        $item = PedidoItem::find($request->input('item_id'));
+
+        if(isset($item)) {
+            $estoque = Estoque_geral::find($item->estoque_geral_id);
+            $estoque->preco = $request->input('valor');
+            $estoque->save();
+
+            $pedido_id = $request->input('pedido_id');
+
+            $item->valor = $request->input('valor');
+            $item->save();
+
+            return redirect()->back()->with(['resul' => 'Valor Alterado', 'ativo' => $pedido_id]);
+        }
+
+        return redirect()->back()->with('resul', 'Falha ao alterar o preço');
+    }
+
+    public function pedidosEstoqueFpId(Request $request) {
+        $pedido_id = $request->input('pedido_id');
+
+        $pedido = PedidoEstoque::find($pedido_id);
+        
+        if(isset($pedido)) {
+            $pedido->status = 'FP';
+            $pedido->save();
+
+            $pedidoItem = PedidoItem::where('pedido_estoque_id', $pedido_id)->get();
+
+            foreach ($pedidoItem as $item) {
+                $item->status = 'FP';
+                $item->save();
+            }
+
+            return redirect()->back()->with('resul' ,'Pedido Finalizado, aguardando chegada');
+        }
+
+        return redirect()->back()->with('resul', 'Falha ao finalizar pedido');
     }
 
     public function destroy($id) {
@@ -258,11 +368,11 @@ class ControladorPedidoEstoque extends Controller
 
             $pedido->delete();
             
-            return redirect()->route('carrinhoPedido')
+            return redirect()->back()
                     ->with('resul', 'Pedido Excluido');
         }
 
-        return redirect()->route('carrinhoPedido')
+        return redirect()->back()
                     ->with('resul', 'Pedido não Encontrado');
 
     }

@@ -45,6 +45,7 @@
         <thead>
             <tr>
                 <th>Descrição</th>
+                <th>Código Item</th>
                 <th>Quantidade</th>
             </tr>
         </thead>
@@ -52,6 +53,7 @@
             @foreach ($dados['itens_pedido'] as $key => $item)
                 <tr>
                     <td>{{ $item['pedido_item_estoque']['descricao'] }}</td>
+                    <td>{{ $item['pedido_item_estoque']['ncm_item'] }}</td>
                     <td>{{ $item['qtd'] }}</td>
                 </tr>
             @endforeach

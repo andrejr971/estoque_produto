@@ -123,6 +123,43 @@ Route::prefix('/estoque')->group(function() {
         ]);
     });
 
+    Route::prefix('/pedidosEstoque')->group(function() {
+        Route::get('/enviados', [
+            'as' => 'pedidosEstoqueEN',
+            'uses' => 'ControladorPedidoEstoque@pedidosEstoqueEN'
+        ]);
+        
+        Route::get('/autorizados', [
+            'as' => 'pedidosEstoqueCP',
+            'uses' => 'ControladorPedidoEstoque@pedidosEstoqueCP'
+        ]);
+
+        Route::put('/autorizados', [
+            'as' => 'pedidosEstoqueCpId',
+            'uses' => 'ControladorPedidoEstoque@pedidosEstoqueCpId'
+        ]);
+
+        Route::put('/atualizar', [
+            'as' => 'pedidosEstoqueAtId',
+            'uses' => 'ControladorPedidoEstoque@pedidosEstoqueAtId'
+        ]);
+
+        Route::get('/finalizados', [
+            'as' => 'pedidosEstoqueFP',
+            'uses' => 'ControladorPedidoEstoque@pedidosEstoqueFP'
+        ]);
+
+        Route::put('/finalizados', [
+            'as' => 'pedidosEstoqueFpId',
+            'uses' => 'ControladorPedidoEstoque@pedidosEstoqueFpId'
+        ]);
+
+        Route::get('/entrada', [
+            'as' => 'pedidosEstoqueOK',
+            'uses' => 'ControladorPedidoEstoque@pedidosEstoqueOK'
+        ]);
+    });
+
     Route::get('/adicionarPedido', function() {
         return redirect()->route('verEstoqueBaixo');
     });

@@ -4,8 +4,17 @@
     <div class="card">
         <div class="card-header">
             <div class="row">
-                <div class="col">
+                <div class="col-5">
                     <h1 class="card-title"> Pedido para o Estoque </h1>
+                </div>
+                <div class="col">
+                    <a href=" {{ route('pedidosEstoqueEN') }}" class="btn btn-info w-100">Enviados</a>
+                </div>
+                <div class="col">
+                    <a href="#" class="btn btn-primary w-100">Autorizados</a>
+                </div>
+                <div class="col">
+                    <a href="#" class="btn btn-success w-100">Finalizados</a>
                 </div>
             </div>
         </div>
@@ -15,7 +24,7 @@
             <div class="card-header">
                 <div class="row">
                     <div class="col-2">
-                        <h4 class="card-title"> Pedido: {{ $pedido->id }} </h3>
+                        <h4 class="card-title"> Pedido: {{ $pedido->id }} </h4>
                     </div>
                     <div class="col">
                         <h4 class="card-title text-center"> 
@@ -90,7 +99,7 @@
                     </div>
                     <div class="col">
                         <a href="#" class="btn btn-success w-100" id="btnConcluir" onclick="conluir({{ $pedido->id }})">
-                            Enviar/Finalizar
+                            Enviar Pedido
                         </a>
                     </div>
                     <div class="col">
