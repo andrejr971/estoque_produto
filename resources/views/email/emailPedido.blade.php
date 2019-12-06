@@ -38,7 +38,7 @@
     </style>
 </head>
 <body>
-    <h1>{{ $dados[0]['assunto'] }}</h1>
+    <h1>{{ $dados[0]['assunto'] }} - Pedido nº {{ $dados['id'] }}</h1>
     <h3>{{ ($dados[1]['obs'] !== null) ? $dados[1]['obs'] : ''}}</h3>
     
     <table>

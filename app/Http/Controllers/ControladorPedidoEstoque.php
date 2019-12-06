@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EntradaSaida;
 use Illuminate\Http\Request;
 use App\Models\PedidoEstoque;
 use App\Models\Estoque_geral;
@@ -23,7 +24,7 @@ class ControladorPedidoEstoque extends Controller
 
     public function indexApi($id) {
         $pedidoEstoque = PedidoItem::with('pedido_item_estoque')
-                        ->where('estoque_geral_id', $id)->get();
+                        ->where(['estoque_geral_id' => $id, 'status' => 'RE'])->get();
 
         if(count($pedidoEstoque) == 0){
             return 0;
@@ -34,6 +35,7 @@ class ControladorPedidoEstoque extends Controller
 
     public function indexApi2() {
         $pedidoEstoque = PedidoItem::with('pedido_item_estoque')
+                        ->where('status' , 'RE')
                         ->select('id', 'pedido_estoque_id', 'estoque_geral_id', 'qtd', 'valor', 'status')->get();
 
         return json_encode($pedidoEstoque);
@@ -52,7 +54,8 @@ class ControladorPedidoEstoque extends Controller
         $dados = [
             ['assunto' => $request->input('assunto')],
             ['obs' => $request->input('observacao')],
-            'itens_pedido' => $itens_pedido
+            'itens_pedido' => $itens_pedido,
+            'id' => $request->input('pedido_id2')
         ];
 
         $email = $request->input('email2');
@@ -107,7 +110,7 @@ class ControladorPedidoEstoque extends Controller
             $pedido_id = $pedido_novo->id;
         }
         
-        $item_pedido = PedidoItem::where('estoque_geral_id', $estoque_geral_id);
+        $item_pedido = PedidoItem::where(['estoque_geral_id' => $estoque_geral_id, 'status' => 'RE'])->get();
 
         if(empty($item_pedido)) {
             return redirect()->route('verEstoqueBaixo')->with('resul', 'Item já esta na lista');
@@ -135,7 +138,7 @@ class ControladorPedidoEstoque extends Controller
         foreach ($itensFornecedor as $itens) {
            foreach ($itens->estoque as $item) {
             $pedidoEstoque = PedidoItem::with('pedido_item_estoque')
-                        ->where('estoque_geral_id', $item->id)->get();
+                        ->where(['estoque_geral_id' => $item->id, 'status' => null])->get();
 
                if(count($pedidoEstoque) === 0) {
                     if($item->qtd <= 1) {
@@ -272,6 +275,7 @@ class ControladorPedidoEstoque extends Controller
             'status' => 'CP'
         ])->get();
 
+        //return json_encode($pedido);
         return view('estoque.pedido.autorizados', [
             'pedidos' => $pedido
         ]);
@@ -341,6 +345,13 @@ class ControladorPedidoEstoque extends Controller
         $pedido = PedidoEstoque::find($pedido_id);
         
         if(isset($pedido)) {
+            $arquivo = $request->file('upFile');
+
+            if(!empty($arquivo)) {
+                $path = $request->file('upFile')->store('anexos', 'public');
+                $pedido->nota_fiscal = $path;
+            }
+
             $pedido->status = 'FP';
             $pedido->save();
 
@@ -355,6 +366,42 @@ class ControladorPedidoEstoque extends Controller
         }
 
         return redirect()->back()->with('resul', 'Falha ao finalizar pedido');
+    }
+
+    public function pedidosEstoqueOK(Request $request) {
+        $pedido_id = $request->input('pedido_id');
+
+        $pedido = PedidoEstoque::find($pedido_id);
+
+        if(isset($pedido)) {
+            $pedidoItem = PedidoItem::where('pedido_estoque_id', $pedido_id)->get();
+            
+            if(isset($pedidoItem)) {
+                foreach($pedidoItem as $item) {
+                    $item->status = 'OK';
+                    $item->save();
+                    //$entrada->entrada_saida()
+                    $entrada = new EntradaSaida();
+                    
+                    $entrada->estoque_geral_id = $item->estoque_geral_id;
+                    $entrada->fornecedor_id = $pedido->fornecedor_id;
+                    $entrada->qtd = $item->qtd;
+                    $entrada->situacao = '1';
+                    $entrada->save();
+    
+                    $estoque = Estoque_geral::find($item->estoque_geral_id);
+                    $estoque->qtd = $estoque->qtd + $item->qtd;
+                    $estoque->save();
+                }
+            }
+            //return json_encode($entrada);
+            $pedido->status = 'OK';
+            $pedido->save();
+
+            return redirect()->back()->with('resul' ,'Baixa ok'); 
+        }
+
+        return redirect()->back()->with('resul' ,'Ops Falhou'); 
     }
 
     public function destroy($id) {

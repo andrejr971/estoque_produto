@@ -18,6 +18,7 @@ function limparCampos() {
     $('#endereco').val('');
     $('#bairro').val('');
     $('#cidade').val('');
+    $('#id').val('');
     
 }
 axios.get('https://servicodados.ibge.gov.br/api/v1/localidades/estados')
@@ -143,10 +144,9 @@ function salvarFornecedor() {
         success: function(data) {
             carregarFornecedores();
             $('#modalFornecedor').modal('hide');
-
             alert('Fornecedor Atualizado');
         },
-        error: function() {
+        error: function(error) {
             console.log(error);
         }
     });

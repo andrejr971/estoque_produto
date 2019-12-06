@@ -154,7 +154,7 @@ Route::prefix('/estoque')->group(function() {
             'uses' => 'ControladorPedidoEstoque@pedidosEstoqueFpId'
         ]);
 
-        Route::get('/entrada', [
+        Route::put('/entrada', [
             'as' => 'pedidosEstoqueOK',
             'uses' => 'ControladorPedidoEstoque@pedidosEstoqueOK'
         ]);

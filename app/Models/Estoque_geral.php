@@ -16,4 +16,8 @@ class Estoque_geral extends Model
         return $this->belongsTo('App\Models\PedidoItem', 'id', 'estoque_geral_id')
             ->select('id', 'estoque_geral_id', 'qtd');
     }
+
+    public function entrada_saidaE() {
+        return $this->belongsToMany('App\Models\Fornecedor', 'entrada_saidas', 'estoque_geral_id', 'id');
+    }
 }

@@ -34,12 +34,12 @@
                         Pedidos
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Carrinho</a>
-                        <a class="dropdown-item" href="#">Enviados</a>
-                        <a class="dropdown-item" href="#">Autorizados</a>
-                        <a class="dropdown-item" href="#">Finalizados</a>
+                        <a class="dropdown-item" href="{{ route('carrinhoPedido') }}">Carrinho</a>
+                        <a class="dropdown-item" href="{{ route('pedidosEstoqueEN') }}">Enviados</a>
+                        <a class="dropdown-item" href="{{ route('pedidosEstoqueCP') }}">Autorizados</a>
+                        <a class="dropdown-item" href="{{ route('pedidosEstoqueFP') }}">Finalizados</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Dar Baixa</a>
+                        <a class="dropdown-item" href="{{ route('pedidosEstoqueOK') }}">Dar Baixa</a>
                     </div>
                 </li>
             </ul>

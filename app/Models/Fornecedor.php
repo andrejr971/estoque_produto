@@ -16,4 +16,8 @@ class Fornecedor extends Model
         return $this->belongsToMany('App\Models\Estoque_geral', 'estoques')
         ->select('id', 'descricao', 'cod_item', 'qtd', 'estoque_min', 'preco', 'un_medida');
     }
+
+    public function entrada_saidaF() {
+        return $this->belongsToMany('App\Models\Estoque_geral', 'entrada_saidas', 'fornecedor_id', 'id');
+    }
 }

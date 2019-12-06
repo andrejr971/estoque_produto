@@ -46,11 +46,6 @@
                             <label for="Nome">Fornecedor (Razão Social)</label>
                             <input type="text" class="form-control" id="nome" name="nome" placeholder="Razão Social" required>
                         </div>
-                        <hr>
-                            <div class="form-group" id="itens_relacionados">
-
-                            </div>
-                        <hr>
                         <div class="row">
                             <div class="col">
                                 <div class="form-group">
@@ -66,7 +61,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="email">Fornecedor (Razão Social)</label>
+                            <label for="email">E-mail</label>
                             <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
                         </div>
                         <div class="row">

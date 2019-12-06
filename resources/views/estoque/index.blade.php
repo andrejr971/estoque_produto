@@ -11,6 +11,9 @@
                     <a href="/estoque/ver" class="btn btn-outline-primary w-100">Ver Estoque</a>
                 </div>
                 <div class="col">
+                    <a href="/estoque/ver" class="btn btn-outline-dark w-100">Nova Categoria</a>
+                </div>
+                <div class="col">
                     <a href="#" class="btn btn-outline-success w-100">Entrada</a>
                 </div>
                 <div class="col">
