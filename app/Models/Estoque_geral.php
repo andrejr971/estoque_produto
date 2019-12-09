@@ -20,4 +20,10 @@ class Estoque_geral extends Model
     public function entrada_saidaE() {
         return $this->belongsToMany('App\Models\Fornecedor', 'entrada_saidas', 'estoque_geral_id', 'id');
     }
+
+    public function estoque()
+    {
+        return $this->BelongsToMany('App\Models\tipo_estoque', 'estoques')
+                ->select('id', 'descricao', 'nota');
+    }
 }

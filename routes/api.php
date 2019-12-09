@@ -44,6 +44,12 @@ Route::get('/enviarPedido/{id}', [
     'uses' => 'ControladorPedidoEstoque@enviarPedido'
 ]);
 
+Route::post('/novoGrupo', 'ContoladorEstoque@grupo');
+
+Route::put('/novoGrupo/{id}', 'ContoladorEstoque@grupoA');
+
 Route::resource('/fornecedor', 'ContoladorFornecedor');
 
 Route::resource('/estoque', 'ContoladorEstoque');
+
+Route::get('/categoria', 'ContoladorEstoque@indexJCat');

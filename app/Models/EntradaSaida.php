@@ -9,4 +9,8 @@ class EntradaSaida extends Model
     public function estoque() {
         return $this->belongsTo('App\Models\Estoque_geral', 'estoque_geral_id', 'id');
     }
+
+    public function fornecedores() {
+        return $this->belongsTo('App\Models\Fornecedor', 'fornecedor_id', 'id');
+    }
 }

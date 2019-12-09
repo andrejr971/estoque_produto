@@ -386,6 +386,7 @@ class ControladorPedidoEstoque extends Controller
                     $entrada->estoque_geral_id = $item->estoque_geral_id;
                     $entrada->fornecedor_id = $pedido->fornecedor_id;
                     $entrada->qtd = $item->qtd;
+                    $entrada->nota = 'Pedido nº '.$pedido_id;
                     $entrada->situacao = '1';
                     $entrada->save();
     

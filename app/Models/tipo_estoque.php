@@ -9,6 +9,7 @@ class tipo_estoque extends Model
 {
     public function estoque()
     {
-        return BelongsToMany('App\Models\Estoque_geral', 'estoques');
+        return $this->BelongsToMany('App\Models\Estoque_geral', 'estoques')
+                ->select(['id', 'descricao', 'qtd', 'preco', 'estante', 'cod_item', 'un_medida']);
     }
 }

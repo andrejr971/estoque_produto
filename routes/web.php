@@ -23,6 +23,11 @@ Route::prefix('/estoque')->group(function() {
         'uses' => 'ContoladorEstoque@indexView'
     ]);
 
+    Route::get('/EstoqueGrupo', [
+        'as' => 'EstoqueGrupo',
+        'uses' => 'ContoladorEstoque@indexViewG'
+    ]);
+
     Route::put('/{id}', [
         'as' => 'atualizarEstoque',
         'uses' => 'ContoladorEstoque@update'
@@ -63,6 +68,11 @@ Route::prefix('/estoque')->group(function() {
         'uses' => 'ContoladorEstoque@gerarPDF'
     ]);
 
+    Route::post('/entrada', [
+        'as' => 'entrada',
+        'uses' => 'ContoladorEstoque@entrada'
+    ]);
+
     Route::prefix('/addItem')->group(function() {
         Route::get('/chapa', [
             'as' => 'addItemEstoqueChapa',
@@ -82,6 +92,11 @@ Route::prefix('/estoque')->group(function() {
         Route::get('/textil', [
             'as' => 'addItemEstoqueTextil',
             'uses' => 'ContoladorEstoque@createTextil'
+        ]);
+
+        Route::get('/outros', [
+            'as' => 'addItemEstoqueOutros',
+            'uses' => 'ContoladorEstoque@createOutros'
         ]);
     });
 

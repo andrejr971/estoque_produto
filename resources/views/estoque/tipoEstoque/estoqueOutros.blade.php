@@ -2,13 +2,13 @@
 
 @section('conteudo')
     <div class="container mt-2">
-        <h1 class="text-center">Estoque de Geral</h1>
+        <h1 class="text-center">Estoque</h1>
         <hr>
         <div class="card">
             <div class="card-body">
                 <form class="form-horizontal" id="formChapas">
                     <input type="hidden" id="id" name="id">
-                    <input type="hidden" id="tipo" name="tipo" value='3'>
+                    <input type="hidden" id="tipo" name="tipo" value='5'>
                     <div class="row">
                         <div class="col">
                             <div class="form-group w-100">
@@ -92,6 +92,16 @@
                                 <input type="text" class="form-control" id="preco" name="preco" maxlength="8" required>
                             </div>
                         </div>
+                        <div class="col-2">
+                            <div class="form-group w-100">
+                                <label>Categoria<span style="color: red;">*</span></label>
+                                <select name="categoria" id="categoria" class="form-control">
+                                    @foreach ($categorias as $categoria)
+                                        <option value="{{ $categoria->id }}">{{ $categoria->descricao }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col">
@@ -163,11 +173,11 @@
             function renderChapas(dados) {
                 elementoTable.innerHTML = '';
                 for(dado of dados) {
-                    for(tipo of dado.estoque) {
-                        var tipos = tipo.id; 
+                    for(tipo of dado.fornecedores) {
+                        var tipos = tipo.pivot.tipo_estoque_id; 
                     }
 
-                    if(tipos == 3) {
+                    if(tipos > 4) {
                         var trElemento = document.createElement('tr');
                         var tdElemento1 = document.createElement('td');
                         var tdElemento2 = document.createElement('td');
@@ -225,8 +235,9 @@
                     estante : $('#estante').val(),
                     ean_item : $('#ean_item').val(),
                     preco : $('#preco').val(),
-                    tipo : '3',
-                    fornecedor : $('#fornecedor').val()
+                    tipo : '5',
+                    fornecedor : $('#fornecedor').val(),
+                    categoria : $('#categoria').val(),
                 }
 
                 $.post('/api/estoque', infla, function() {

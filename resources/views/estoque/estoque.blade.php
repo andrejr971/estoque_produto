@@ -83,6 +83,12 @@
                                 Adicionar Estoque Tecido/Costura
                             </label>
                         </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="tipo" id="tipo5" value="4">
+                            <label class="form-check-label" for="tipo5">
+                                Outros
+                            </label>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Fechar</button>
@@ -294,6 +300,8 @@
                 window.location.href = '{{ route("addItemEstoqueGeral") }}';
             } else if ($('#tipo4').prop('checked')) {
                 window.location.href = '{{ route("addItemEstoqueTextil") }}';
+            } else if($('#tipo5').prop('checked')) {
+                window.location.href = '{{ route("addItemEstoqueOutros") }}';
             } else {
                 alert('Selecione uma opção');
             }
@@ -504,6 +512,21 @@
             });
         }
 
+        var grupos = '';
+
+        function categoria(id) {
+
+            $.get('/api/categoria', function(cat, id) {
+                categoria = JSON.parse(cat);
+                for(c of categoria) {
+                    if(id == c.id)
+                    var grupo =  c.descricao;
+                }
+            });
+            
+            grupos = gru
+        }
+
         function renderChapas(dados) {
             //console.log(dados);
                 elementoTable.innerHTML = '';
@@ -522,16 +545,9 @@
                     var texto2 = document.createTextNode(dado.descricao);
                     var texto4 = document.createTextNode(dado.cod_item);
                     var texto5 = document.createTextNode(dado.qtd + ' ' + dado.un_medida);
-                    for(tipo of dado.fornecedores) {
-                        if(tipo.pivot.tipo_estoque_id === 1) {
-                            var texto3 = document.createTextNode('CHAPAS');
-                        } else if (tipo.pivot.tipo_estoque_id === 2) {
-                            var texto3 = document.createTextNode('INFLAMÁVEIS'); 
-                        } else if (tipo.pivot.tipo_estoque_id === 3) {
-                            var texto3 = document.createTextNode('GERAL'); 
-                        } else {
-                            var texto3 = document.createTextNode('TEXTIL');
-                        }
+
+                    for(tipo of dado.estoque) {                        
+                        var texto3 = document.createTextNode(tipo.descricao);
                     }
 
                     if(dado.estante === null) {

@@ -1,17 +1,5 @@
 @extends('layout.index')
 
-@push('style')
-    <style>
-        .usar_xml:checked ~ div.xml {
-            display: block;
-        }
-        .xml {
-            display: none;
-        }
-    </style>
-    
-@endpush
-
 @section('conteudo')
     <div class="card">
         <div class="card-header">
@@ -26,7 +14,7 @@
                     <a href="{{ route('EstoqueGrupo') }}" class="btn btn-outline-dark w-100">Nova Categoria</a>
                 </div>
                 <div class="col">
-                    <a href="#" class="btn btn-outline-success w-100" data-toggle="modal" data-target="#modalTipo">Entrada</a>
+                    <a href="#" class="btn btn-outline-success w-100">Entrada</a>
                 </div>
                 <div class="col">
                     <a href="#" class="btn btn-outline-danger w-100">Saída</a>
@@ -256,46 +244,6 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modalTipo" tabindex="-1" role="dialog" aria-labelledby="tipoModal" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <form action="{{ route('entrada') }}" class="form-horizontal" id="formEntrada" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="tipoModal">Escolha uma opção</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="xml" id="manual" value="1" checked>
-                            <label class="form-check-label" for="manual">
-                                Manual
-                            </label>
-                        </div>
-                        <div class="form-check ">
-                            <input class="form-check-input usar_xml" type="radio" name="xml" id="xml" value="2">
-                            <label class="form-check-label" for="xml">
-                                Usar XML
-                            </label>
-                            <div class="form-group xml">
-                                <div class="row">
-                                    <div class="col">
-                                        <input type="file" name="upFile" accept=".xml">  
-                                    </div>
-                                </div>  
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Fechar</button>
-                        <button type="submit" class="btn btn-outline-primary">Confirmar</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
 @endsection
 
 @section('javascript')
@@ -349,7 +297,5 @@
             $('#outros').append(valor5);
         }
 
-        chamarRenderTabela();
-        
     </script>
 @endsection
