@@ -101,21 +101,21 @@
                     nota : $('#nota').val()
                 }
 
-                $.ajax({
-                type: 'PUT',
-                url: '/api/novoGrupo/' + id,
-                data : grupo,
-                context: this,
-                success: function(data) {
-                    //carregarFornecedores();
-                    $('#modalTipo').modal('hide');
-                    chamarRender();
-                    alert('Grupo Atualizado');
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-            });
+                    $.ajax({
+                    type: 'PUT',
+                    url: '/api/novoGrupo/' + id,
+                    data : grupo,
+                    context: this,
+                    success: function(data) {
+                        //carregarFornecedores();
+                        $('#modalTipo').modal('hide');
+                        chamarRender();
+                        alert('Grupo Atualizado');
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
             }
 
             function ver(id) {

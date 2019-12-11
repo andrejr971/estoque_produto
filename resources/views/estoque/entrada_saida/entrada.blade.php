@@ -5,297 +5,119 @@
         <div class="card-header">
             <div class="row">
                 <div class="col">
-                    <h1 class="card-title">Estoque</h1>
+                    <h1 class="card-title">Entrada</h1>
                 </div>
-                <div class="col">
+                <div class="col-3">
                     <a href="/estoque/ver" class="btn btn-outline-primary w-100">Ver Estoque</a>
-                </div>
-                <div class="col">
-                    <a href="{{ route('EstoqueGrupo') }}" class="btn btn-outline-dark w-100">Nova Categoria</a>
-                </div>
-                <div class="col">
-                    <a href="#" class="btn btn-outline-success w-100">Entrada</a>
-                </div>
-                <div class="col">
-                    <a href="#" class="btn btn-outline-danger w-100">Saída</a>
-                </div>
-                <div class="col">
-                    <div class="dropdown">
-                        <button class="btn btn-outline-success w-100 dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Gerar Relatório
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item" href="#">Entrada</a>
-                            <a class="dropdown-item" href="#">Saída</a>
-                            <a class="dropdown-item" href="#">Entrada e Saída</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Compras deste mês</a>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
         <div class="card-body">
-            <div class="row mt-3 mb-3">
-                <div class="col-4">
-                    <div class="card">
-                        <div style="height: 5px;" class="bg-primary"></div>
-                        <div class="card-body" >
-                            <h3 class="card-title text-center" id="itens"></h3>
-                            <a href="/estoque/ver" class="btn btn-outline-primary w-100">Estoque</a>
-                        </div>
-                    </div>
+            <div class="row mb-3">
+                <div class="col">
+                    <h3>Itens a serem adicionados</h3>
                 </div>
-                <div class="col-4">
-                    <div class="card">
-                        <div style="height: 5px;" class="bg-warning"></div>
-                        <div class="card-body">
-                            <h3 class="card-title text-center" id="chapas"></h3>
-                            <a href="/estoque/verChapas" class="btn btn-outline-warning w-100">Estoque</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-4">
-                    <div class="card">
-                        <div style="height: 5px;" class="bg-info"></div>
-                        <div class="card-body">
-                            <h3 class="card-title text-center" id="inflamaveis"></h3>
-                            <a href="/estoque/verInflamaveis" class="btn btn-outline-info w-100">Estoque</a>
-                        </div>
-                    </div>
+                <div class="col-3">
+                    <a href="#" class="btn btn-info w-100" data-toggle="modal" data-target="#modalCategoria">Adicionar Categorias</a>
                 </div>
             </div>
-            <div class="row mt-3">
-                <div class="col-4">
-                    <div class="card">
-                        <div style="height: 5px;" class="bg-success"></div>
-                        <div class="card-body">
-                            <h3 class="card-title text-center" id="geral"></h3>
-                            <a href="/estoque/verGeral" class="btn btn-outline-success w-100">Estoque</a>
-                        </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Codigo</th>
+                        <th>Nome</th>
+                        <th>Quantidade</th>
+                        <th>Un. Medida</th>
+                        <th>Valor Un.</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for ($i = 0; $i < count($produtos); $i ++)
+                        @if ($produtos[$i]['existe'] == 1)
+                            <tr>
+                                <td>{{ $produtos[$i]['codigo'] }}</td>
+                                <td>{{ $produtos[$i]['nome'] }}</td>
+                                <td>{{ $produtos[$i]['qtd'] }}</td>
+                                <td>{{ $produtos[$i]['un_medida'] }}</td>
+                                <td>R$ {{ number_format($produtos[$i]['valor_un'], 2, ',', '.') }}</td>
+                                <td>R$ {{ number_format($produtos[$i]['valor'], 2, ',', '.') }}</td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td id="teste">{{ $produtos[$i]['codigo'] }}</td>
+                                <td>{{ $produtos[$i]['nome'] }}</td>
+                                <td>{{ $produtos[$i]['qtd'] }}</td>
+                                <td>{{ $produtos[$i]['un_medida'] }}</td>
+                                <td>R$ {{ number_format($produtos[$i]['valor_un'], 2, ',', '.') }}</td>
+                                <td>R$ {{ number_format($produtos[$i]['valor'], 2, ',', '.') }}</td>
+                            </tr>
+                        @endif
+                    @endfor
+                </tbody>
+            </table>
+        </div>
+    </div>
+ 
+    <div class="modal fade" id="modalCategoria" tabindex="-1" role="dialog" aria-labelledby="tipoModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <form action="/entrada/addItens" class="form-horizontal" id="formEntrada2" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="hidden" name="fornecedor_id" value="{{ $produtos[0]['fornecedor'] }}">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="tipoModal">Escolha uma categoria p/ os itens</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                </div>
-                <div class="col-4">
-                    <div class="card">
-                        <div style="height: 5px;" class="bg-secondary"></div>
-                        <div class="card-body">
-                            <h3 class="card-title text-center" id="textil"></h3>
-                            <a href="/estoque/verTecido" class="btn btn-outline-secondary w-100">Estoque</a>
+                    <div class="modal-body">
+                        <div class="form-group xml">
+                            <div class="row">
+                                <div class="w-100 ml-3">
+                                    <label>Nota Fiscal (DANFE)<span style="color: red;">*</span></label>
+                                </div>
+                                <div class="col">
+                                    <input type="file" name="upFile" accept=".xml, .pdf" required>  
+                                </div>
+                            </div>  
                         </div>
-                    </div>
-                </div>
-                <div class="col-4">
-                    <div class="card">
-                        <div style="height: 5px;" class="bg-dark"></div>
-                        <div class="card-body">
-                            <h3 class="card-title text-center" id="outros"></h3>
-                            <a href="/estoque/verTecido" class="btn btn-outline-dark w-100">Estoque</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mt-3">
-                <div class="col">
-                    <div class="card">
-                        <div class="card-header bg-success text-light">
-                            <h2 class="card-title">Ultimas Entradas</h2>
-                        </div>
-                        <div class="card-body">
-                            <table class="table table-sm table-bordered table-striped table-responsive-sm">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>Fornecedor</th>
-                                        <th>Item</th>
-                                        <th>Data</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($entrada as $item)
-                                        <tr>
-                                            <td>{{ $item->fornecedores->nome }}</td>
-                                            <td>{{ $item->estoque->descricao }}</td>
-                                            <td>{{ $item->created_at->format('d/m/Y') }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-
-                        </div>
-                        <div class="card-footer">
-                            <a href="#" class="btn btn-outline-success w-100">Ver mais</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card">
-                        <div class="card-header bg-danger text-light">
-                            <h2 class="card-title">Produtos com baixo Estoque</h2>
-                        </div>
-                        <div class="card-body">
-                            <table id="tabelaBaixo" class="table table-sm table-bordered table-striped table-responsive-sm">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>Produto</th>
-                                        <th>QTD/UN</th>
-                                        <th>Fornecedor</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php
-                                        $cont = 0;
-                                    @endphp
-                                    @foreach ($estoque as $item)
-                                        @if ($item->qtd <= 1)
-                                            <tr>
-                                                <td>{{ $item->descricao }}</td>
-                                                <td>{{ $item->qtd . ' '. $item->un_medida}}</td>
-                                                @foreach ($item->fornecedores as $fornecedor)
-                                                    <td>{{ $fornecedor->nome }}</td>
+                        <input type="hidden" name="contProd" value="{{ count($produtos) }}">
+                        @for ($i = 0; $i < count($produtos); $i ++)
+                            @if ($produtos[$i]['existe'] == 0)
+                                <div class="row mt-1">
+                                    <div class="col-3">
+                                        <label>Código</label>
+                                        <input type="text" class="form-control" name="cod_prod{{ $i }}" value="{{ $produtos[$i]['codigo'] }}" >
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label>Categoria <span style="color: red;">*</span></label>
+                                            <select name="categoria{{ $i }}" id="categoria{{ $i }}" class="form-control">
+                                                @foreach ($grupos as $grupo)
+                                                    <option value="{{ $grupo->id }}">{{ $grupo->descricao }}</option>
                                                 @endforeach
-                                            </tr>
-                                            @php
-                                                $cont ++;
-                                                
-                                                if($cont == 3) {
-                                                    break;
-                                                }
-                                            @endphp
-                                        @endif
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="card-footer">
-                            <a href="/estoque/verBaixo" class="btn btn-outline-danger w-100">Ver mais</a>
-                        </div>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        @endfor
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-outline-primary">Confirmar</button>
                     </div>
                 </div>
-            </div>
-            <div class="row mt-3">
-                <div class="col">
-                    <div class="card">
-                        <div class="card-header bg-secondary text-light">
-                            <h2 class="card-title">Ordem de Compra (OC)</h2>
-                        </div>
-                        <div class="card-body">
-                            <table class="table table-sm table-bordered table-striped table-responsive-sm">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>Produto</th>
-                                        <th>Fornecedor</th>
-                                        <th>QTD/UN</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php
-                                        $cont = 0;
-                                    @endphp
-                                    @foreach ($estoque as $item)
-                                        @if ($item->qtd <= $item->estoque_min)
-                                            <tr>
-                                                <td>{{ $item->descricao }}</td>
-                                                @foreach ($item->fornecedores as $fornecedor)
-                                                    <td>{{ $fornecedor->nome }}</td>
-                                                @endforeach
-                                                <td>{{ $item->qtd . ' '. $item->un_medida}}</td>
-                                            </tr>
-                                            @php
-                                                $cont ++;
-                                                
-                                                if($cont == 3) {
-                                                    break;
-                                                }
-                                            @endphp
-                                        @endif
-                                    @endforeach
-                                </tbody>
-                            </table>
-
-                        </div>
-                        <div class="card-footer">
-                            <a href="#" class="btn btn-outline-secondary w-100">Ver mais</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card">
-                        <div class="card-header bg-warning text-light">
-                            <h2 class="card-title">Produtos com baixo Estoque</h2>
-                        </div>
-                        <div class="card-body">
-                            <table id="" class="table table-sm table-bordered table-striped table-responsive-sm">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>Produto</th>
-                                        <th>QTD/UN</th>
-                                        <th>Fornecedor</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="card-footer">
-                            <a href="#" class="btn btn-outline-warning w-100">Ver mais</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
 @endsection
 
 @section('javascript')
     <script>
-        const tabelaElemento = document.querySelector('#tabelaBaixo tbody');
+        function categoria(cod_prod, fornecedor_id) {
 
-        axios.get('/api/estoque')
-                .then(function(response) {
-                    countItens(response.data);
-                })
-                .catch(function(erro) {
-                    alert(erro);
-                });
-
-        function countItens(contador) {
-            let cont1 = 0;
-            let cont2 = 0;
-            let cont3 = 0;
-            let cont4 = 0;
-            let cont5 = 0;
-
-            for(cont of contador) {
-
-                for(tipo of cont.fornecedores) {
-                    if(tipo.pivot.tipo_estoque_id == 1) {
-                        cont1 ++;
-                    } else if(tipo.pivot.tipo_estoque_id == 2) {
-                        cont2 ++;
-                    } else if(tipo.pivot.tipo_estoque_id == 3) {
-                        cont3 ++;
-                    } else if(tipo.pivot.tipo_estoque_id == 4) {
-                        cont4 ++;
-                    } else {
-                        cont5 ++;
-                    }
-                }
-            }
-
-            var valor = 'Total : ' + contador.length;
-            var valor1 = 'Chapas : ' + cont1;
-            var valor2 = 'Inflamáveis : ' + cont2;
-            var valor3  = 'Geral : ' + cont3;
-            var valor4  = 'Textil : ' + cont4;
-            var valor5  = 'Outros : ' + cont5;
-
-            $('#itens').append(valor);
-            $('#chapas').append(valor1);
-            $('#inflamaveis').append(valor2);
-            $('#geral').append(valor3);
-            $('#textil').append(valor4);
-            $('#outros').append(valor5);
         }
-
     </script>
 @endsection

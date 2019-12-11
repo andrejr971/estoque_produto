@@ -17,6 +17,7 @@ class CreateEstoqueGeralsTable extends Migration
             $table->bigIncrements('id');
             $table->string('descricao');
             $table->string('cod_item');
+            $table->string('cod_prod');
             $table->string('ean_item')->nullable();
             $table->string('ncm_item')->nullable();
             $table->string('estante')->nullable();

@@ -375,63 +375,65 @@
                     for(fornecedor of dado.fornecedores) { 
                         $('#fornecedor_id').val(fornecedor.id);
                         $('#tipo_estoque_id').val(fornecedor.pivot.tipo_estoque_id);
+
+                        if(dado.estante == null) {
+                            $('#estante').val('');
+                            $('#estante').prop('disabled', true);
+                        } else {
+                            
+                            $('#estante').prop('disabled', false);
+                            $('#estante').val($('option:contains("' + dado.estante + '")').val());
+                        }
+
+                        if(fornecedor.pivot.tipo_estoque_id != 1) {
+                            $('#largura').val('');
+                            $('#altura').val('');
+
+                            $('#largura').prop('disabled', true);
+                            $('#altura').prop('disabled', true);
+                            $('#espessura').prop('disabled', true);
+                        } else {
+                            
+                            $('#largura').prop('disabled', false);
+                            $('#altura').prop('disabled', false);
+                            $('#espessura').prop('disabled', false);
+
+                            $('#largura').val(dado.largura);
+                            $('#altura').val(dado.altura);
+                            $('#espessura').val($('option:contains("' + dado.espessura + '")').val());
+                        }
+
+                        if(fornecedor.pivot.tipo_estoque_id != 4) {
+                            $('#reservado1').prop('disabled', true);
+                            $('#reservado0').prop('disabled', true);
+
+                            $('#pedido').prop('disabled', true);
+                        } else {
+                            $('#reservado1').prop('disabled', false);
+                            $('#reservado0').prop('disabled', false);
+
+                            $('#pedido').prop('disabled', false);
+
+                            if(dado.reservado == 1) {
+                                $('#reservado1').filter('[value="1"]').attr('checked', true);
+                            } else {
+                                $('#reservado0').filter('[value="0"]').attr('checked', true);
+                            } 
+
+                            $('#pedido').val(dado.pedido);
+                        }
+
+                        if(fornecedor.pivot.tipo_estoque_id != 2) {
+                            $('#volume').val('');
+                            $('#volume').prop('disabled', true);
+                        } else {
+                            $('#volume').prop('disabled', true);
+
+                            $('#volume').val(dado.vol);
+                        }
+
                     }
                     $('#unidade').val($('option:contains("' + dado.un_medida + '")').val());
-                    
-                    if(dado.estante == null) {
-                        $('#estante').val('');
-                        $('#estante').prop('disabled', true);
-                    } else {
-                        
-                        $('#estante').prop('disabled', false);
-                        $('#estante').val($('option:contains("' + dado.estante + '")').val());
-                    }
-
-                    if(dado.largura == null) {
-                        $('#largura').val('');
-                        $('#altura').val('');
-
-                        $('#largura').prop('disabled', true);
-                        $('#altura').prop('disabled', true);
-                        $('#espessura').prop('disabled', true);
-                    } else {
-                        
-                        $('#largura').prop('disabled', false);
-                        $('#altura').prop('disabled', false);
-                        $('#espessura').prop('disabled', false);
-
-                        $('#largura').val(dado.largura);
-                        $('#altura').val(dado.altura);
-                        $('#espessura').val($('option:contains("' + dado.espessura + '")').val());
-                    }
-
-                    if(dado.reservado == null) {
-                        $('#reservado1').prop('disabled', true);
-                        $('#reservado0').prop('disabled', true);
-
-                        $('#pedido').prop('disabled', true);
-                    } else {
-                        $('#reservado1').prop('disabled', false);
-                        $('#reservado0').prop('disabled', false);
-
-                        $('#pedido').prop('disabled', false);
-                        if(dado.reservado == 1) {
-                            $('#reservado1').filter('[value="1"]').attr('checked', true);
-                        } else {
-                            $('#reservado0').filter('[value="0"]').attr('checked', true);
-                        } 
-
-                        $('#pedido').val(dado.pedido);
-                    }
-
-                    if(dado.vol == null) {
-                        $('#volume').val('');
-                        $('#volume').prop('disabled', true);
-                    } else {
-                        $('#volume').prop('disabled', true);
-
-                        $('#volume').val(dado.vol);
-                    }
 
                     $('#preco').val(dado.preco);
                     var buttonExcluir = document.querySelector('#excluir');
@@ -524,7 +526,6 @@
                 }
             });
             
-            grupos = gru
         }
 
         function renderChapas(dados) {

@@ -22,6 +22,7 @@ class CreateEntradaSaidasTable extends Migration
             $table->float('qtd', 4, 2);
             $table->enum('situacao', ['0', '1']);
             $table->string('nota')->nullable();
+            $table->string('nfe')->nullable();
             $table->timestamps();
         });
     }

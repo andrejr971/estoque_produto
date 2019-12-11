@@ -48,6 +48,14 @@ Route::post('/novoGrupo', 'ContoladorEstoque@grupo');
 
 Route::put('/novoGrupo/{id}', 'ContoladorEstoque@grupoA');
 
+Route::get('/add_list', 'ContoladorEstoque@mostrarSession');
+
+Route::post('/add_list', 'ContoladorEstoque@entradaSession'); 
+
+Route::delete('/remover_list/{id}', 'ContoladorEstoque@removerEntrada'); 
+
+Route::delete('/remover_list', 'ContoladorEstoque@removerTodaEntrada'); 
+
 Route::resource('/fornecedor', 'ContoladorFornecedor');
 
 Route::resource('/estoque', 'ContoladorEstoque');

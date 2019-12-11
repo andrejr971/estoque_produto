@@ -13,4 +13,5 @@ class EntradaSaida extends Model
     public function fornecedores() {
         return $this->belongsTo('App\Models\Fornecedor', 'fornecedor_id', 'id');
     }
+
 }

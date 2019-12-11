@@ -26,4 +26,9 @@ class Estoque_geral extends Model
         return $this->BelongsToMany('App\Models\tipo_estoque', 'estoques')
                 ->select('id', 'descricao', 'nota');
     }
+
+    public function consultaProd($where) {
+        $retorno = Estoque_geral::where('cod_prod', $where)->get();
+        return (count($retorno) == 0) ? null : $retorno[0]['id'];
+    }
 }

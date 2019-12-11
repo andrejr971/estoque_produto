@@ -68,6 +68,16 @@ Route::prefix('/estoque')->group(function() {
         'uses' => 'ContoladorEstoque@gerarPDF'
     ]);
 
+    Route::get('/gerarPDFEntrada', [
+        'as' => 'gerarPDFEntrada',
+        'uses' => 'ContoladorEstoque@gerarPDFEntrada'
+    ]);
+
+    Route::get('/teste', [
+        'as' => 'teste',
+        'uses' => 'ContoladorEstoque@teste'
+    ]);
+
     Route::post('/entrada', [
         'as' => 'entrada',
         'uses' => 'ContoladorEstoque@entrada'
@@ -184,6 +194,22 @@ Route::prefix('/estoque')->group(function() {
         'uses' => 'ControladorPedidoEstoque@estoqueFornecedor'
     ]);
 });
+
+Route::post('/entrada/addItens', [
+    'as' => 'addItem',
+    'uses' => 'ContoladorEstoque@addItemEntrada'
+]);
+
+Route::post('/entrada/manual', [
+    'as' => 'adicionarEntradaManual',
+    'uses' => 'ContoladorEstoque@adicionarEntradaManual'
+]);
+
+Route::put('/saida', [
+    'as' => 'saidaEstoque',
+    'uses' => 'ContoladorEstoque@saidaEstoque'
+]);
+
 
 Route::get('/fornecedor', [
         'as' => 'fornecedor',

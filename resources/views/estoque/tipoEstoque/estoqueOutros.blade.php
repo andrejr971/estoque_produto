@@ -237,7 +237,7 @@
                     preco : $('#preco').val(),
                     tipo : '5',
                     fornecedor : $('#fornecedor').val(),
-                    categoria : $('#categoria').val(),
+                    tipo : $('#categoria').val(),
                 }
 
                 $.post('/api/estoque', infla, function() {
