@@ -11,7 +11,13 @@ class EntradaSaida extends Model
     }
 
     public function fornecedores() {
-        return $this->belongsTo('App\Models\Fornecedor', 'fornecedor_id', 'id');
+        return $this->belongsTo('App\Models\Fornecedor', 'fornecedor_id', 'id')
+                    ->select('id', 'nome', 'cnpj');
+    }
+
+    public function tipo_estoque() {
+        return $this->belongsTo('App\Models\tipo_estoque', 'tipo_estoque_id', 'id')
+                    ->select('id', 'descricao');
     }
 
 }

@@ -80,7 +80,7 @@ class ContoladorEstoque extends Controller
         $estantes = ['Escritório', 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
         return view('estoque.ver.estoqueTextil', [
             'estantes' => $estantes
-        ]); 
+        ]);
     }
 
     public function verEstoqueBaixo() {
@@ -90,31 +90,219 @@ class ContoladorEstoque extends Controller
     //Gerar PDF
     public function gerarPDF()
     {
-        return \PDF::loadView('estoque.pdf.PDFEstoqueB', [
+        /*return \PDF::loadView('estoque.pdf.PDFEstoqueB', [
             'estoque' => Estoque_geral::with('fornecedores')->get(),
         ])->setPaper('a4', 'landscape')
-                    ->stream('nome-arquivo-pdf-gerado.pdf');
+                    ->stream('nome-arquivo-pdf-gerado.pdf');*/
     }
 
     public function gerarPDFEntrada() {
+        $mes = [
+            1 => 'Jan',
+            2 => 'Fev',
+            3 => 'Mar',
+            4 => 'Abr',
+            5 => 'Mai',
+            6 => 'Jun',
+            7 => 'Jul',
+            8 => 'Ago',
+            9 => 'Set',
+            10 => 'Out',
+            11 => 'Nov',
+            12 => 'Dez'
+        ];
+        $meses = [];
 
-        $entrada = EntradaSaida::with(['estoque', 'fornecedores'])
+        for($i = date('m'); $i >= 1; $i--) {
+            array_push($meses, $mes[$i]);
+        }
+
+        $entrada =  EntradaSaida::with('estoque', 'fornecedores', 'tipo_estoque')
                 ->where('situacao', '1')
+                ->orderBy('estoque_geral_id')
                 ->get();
 
-        /*foreach ($entrada as $key => $item) {
-           if($item->situacao == '0') {
-               unset($entrada[$key]);
-           }
-        }*/
-        
+        $entrada2 = $entrada->groupBy('tipo_estoque_id');
+        $relEntradaTipo = [];
+
+        foreach ($entrada2 as $itens) {
+            $soma = 0;
+            $tipo_estoque_nome = '';
+
+            $armTipo = 0;
+            foreach ($itens as $item) {
+                if($item['tipo_estoque']['id'] == $armTipo) {
+                    $soma = $soma + $item['qtd'];
+                } else {
+                    $soma = $item['qtd'];
+
+                }
+                $armTipo = $item['tipo_estoque']['id'];
+                $tipo_estoque_nome = $item['tipo_estoque']['descricao'];
+            }
+
+            array_push($relEntradaTipo, [
+                'tipo_estoque_id' => $item['tipo_estoque']['id'],
+                'tipo_estoque_nome' => $tipo_estoque_nome,
+                'qtd' => $soma
+            ]);
+        }
+
         return view('estoque.entrada_saida.relatorioEntrada', [
-            'itens' => $entrada
+            'meses' => $meses,
+            'dados' => $relEntradaTipo
         ]);
-        /*return \PDF::loadView('estoque.pdf.PDFEntrada', [
-            'entrada' => $entrada
-        ])->setPaper('a4', 'landscape')
-                    ->stream('entrada_estoque.pdf');*/
+    }
+
+    public function relEntrada() {
+        return EntradaSaida::with('estoque', 'fornecedores')
+                ->where('situacao', '1')
+                ->whereMonth('created_at', date('m'))
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+    }
+
+    public function filtrarEntrada($mes) {
+        return EntradaSaida::with('estoque', 'fornecedores')
+                ->where('situacao', '1')
+                ->whereMonth('created_at', $mes)
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+    }
+
+    public function relComEntrada() {
+        $entrada =  EntradaSaida::with('estoque', 'fornecedores', 'tipo_estoque')
+                ->where('situacao', '1')
+                ->whereMonth('created_at', date('m'))
+                ->orderBy('estoque_geral_id')
+                ->get();
+
+        $entrada2 = $entrada->groupBy('tipo_estoque_id');
+        $relEntradaTipo = [];
+
+        foreach ($entrada2 as $itens) {
+            $soma = 0;
+            $tipo_estoque_nome = '';
+
+            $armTipo = 0;
+            foreach ($itens as $item) {
+                if($item['tipo_estoque']['id'] == $armTipo) {
+                    $soma = $soma + $item['qtd'];
+                } else {
+                    $soma = $item['qtd'];
+
+                }
+                $armTipo = $item['tipo_estoque']['id'];
+                $tipo_estoque_nome = $item['tipo_estoque']['descricao'];
+            }
+
+            array_push($relEntradaTipo, [
+                'label' => $tipo_estoque_nome,
+                'value' => $soma
+            ]);
+        }
+
+        return $relEntradaTipo;
+
+    }
+
+    public function relEntradaMes() {
+        $entrada =  EntradaSaida::with('estoque', 'fornecedores', 'tipo_estoque')
+                ->where('situacao', '1')
+                ->orderBy('estoque_geral_id')
+                ->get();
+
+        $entrada2 = $entrada->groupBy('tipo_estoque_id');
+        $relEntradaTipo = [];
+
+        $mes = [
+            1 => 'Jan',
+            2 => 'Fev',
+            3 => 'Mar',
+            4 => 'Abr',
+            5 => 'Mai',
+            6 => 'Jun',
+            7 => 'Jul',
+            8 => 'Ago',
+            9 => 'Set',
+            10 => 'Out',
+            11 => 'Nov',
+            12 => 'Dez'
+        ];
+        $meses = [];
+
+        for($i = date('m'); $i >= 5; $i--) {
+            array_push($meses, $mes[$i]);
+        }
+
+        foreach ($entrada2 as $itens) {
+            $arm = 0;
+            $soma = 0;
+            /*$descricao = '';
+            $preco = 0;
+            $fornecedor_id = 0;
+            $fornecedor_nome = '';
+            $nota = '';
+            $nfe = '';
+            $tipo_estoque_id = '';*/
+            $tipo_estoque_nome = '';
+
+            $armTipo = 0;
+            foreach ($itens as $item) {
+                if($item['tipo_estoque']['id'] == $armTipo) {
+                    $soma = $soma + $item['qtd'];
+                } else {
+                    $soma = $item['qtd'];
+
+                }
+                $armTipo = $item['tipo_estoque']['id'];
+                $tipo_estoque_nome = $item['tipo_estoque']['descricao'];
+            }
+
+            array_push($relEntradaTipo, [
+                //'tipo_estoque_id' => $item['tipo_estoque']['id'],
+                'label' => $tipo_estoque_nome,
+                'value' => $soma
+            ]);
+            /*foreach ($itens as $item) {
+                if($item['estoque_geral_id'] == $arm){
+                    $soma = $soma + $item['qtd'];
+                    $descricao = $item['estoque']['descricao'];
+                    $preco = $item['estoque']['preco'];
+                    $fornecedor_id = $item['fornecedores']['id'];
+                    $fornecedor_nome = $item['fornecedores']['nome'];
+                    $tipo_estoque_id = $item['tipo_estoque']['id'];
+                    $tipo_estoque_nome = $item['tipo_estoque']['descricao'];
+                    $nota = $item['nota'];
+                    $nfe = $item['nfe'];
+                } else {
+                    $soma = $item['qtd'];
+                    $descricao = $item['estoque']['descricao'];
+                    $preco = $item['estoque']['preco'];
+                    $fornecedor_id = $item['fornecedores']['id'];
+                    $fornecedor_nome = $item['fornecedores']['nome'];
+                    $tipo_estoque_id = $item['tipo_estoque']['id'];
+                    $tipo_estoque_nome = $item['tipo_estoque']['descricao'];
+                    $nota = $item['nota'];
+                    $nfe = $item['nfe'];
+                }
+                $arm = $item['estoque_geral_id'];
+            }
+            array_push($relEntrada, [
+                'estoque_geral_id' => $arm,
+                'descricao' => $descricao,
+                'qtd' => $soma,
+                'preco' => number_format($preco, '2', ',', '.'),
+                'fornecedor_id' => $fornecedor_id,
+                'fornecedor_nome' => $fornecedor_nome,
+                'nota' => $nota,
+                'nfe' => $nfe,
+                'tipo_estoque_id' => $tipo_estoque_id,
+                'tipo_estoque_nome' => $tipo_estoque_nome
+            ]);*/
+        }
+
+        return $relEntradaTipo;
     }
 
     public function index()
@@ -189,7 +377,7 @@ class ContoladorEstoque extends Controller
             } else {
                 $estoque->cod_item = 'CHA' . $cod[0]. '_' . str_pad($ult_id->id+1, 4, '0', STR_PAD_LEFT);
             }
-            
+
             $estoque->un_medida = $request->input('unidade');
             $estoque->qtd = $request->input('qtd');
             $estoque->estoque_min = $request->input('min');
@@ -198,7 +386,7 @@ class ContoladorEstoque extends Controller
             $estoque->espessura =  $request->input('espessura');
             $estoque->largura =  $request->input('largura');
             $estoque->altura =  $request->input('altura');
-            
+
             $estoque->area = (($request->input('largura') / 1000) * ($request->input('altura') / 1000) * $estoque->qtd);;
 
             /*$estoque->ean_item = null;*/
@@ -208,8 +396,8 @@ class ContoladorEstoque extends Controller
             $estoque->reservado = null;
             $estoque->pedido = null;
             $estoque->metragem = null;*/
-            
-            
+
+
             //return redirect('/estoque');
 
         } else if($tipo_estoque == '2') {
@@ -219,7 +407,7 @@ class ContoladorEstoque extends Controller
             } else {
                 $estoque->cod_item = 'INF' . $cod[0]. '_' . str_pad($ult_id->id+1, 4, '0', STR_PAD_LEFT);
             }
-            
+
             $estoque->un_medida = $request->input('unidade');
             $estoque->qtd = $request->input('qtd');
             $estoque->estoque_min = $request->input('min');
@@ -236,7 +424,7 @@ class ContoladorEstoque extends Controller
             } else {
                 $estoque->cod_item = 'GER' . $cod[0]. '_' . str_pad($ult_id->id+1, 4, '0', STR_PAD_LEFT);
             }
-            
+
             $estoque->un_medida = $request->input('unidade');
             $estoque->qtd = $request->input('qtd');
             $estoque->estoque_min = $request->input('min');
@@ -252,7 +440,7 @@ class ContoladorEstoque extends Controller
             } else {
                 $estoque->cod_item = 'TEX' . $cod[0]. '_' . str_pad($ult_id->id+1, 4, '0', STR_PAD_LEFT);
             }
-            
+
             $estoque->un_medida = $request->input('unidade');
             $estoque->qtd = $request->input('metragem');
             $estoque->metragem = $request->input('metragem');
@@ -264,20 +452,20 @@ class ContoladorEstoque extends Controller
             $estoque->reservado = $request->input('reservado');
             $estoque->pedido = $request->input('pedido');
             $estoque->oc = $request->input('oc');
-            
+
         } else if($tipo_estoque >= '5') {
             $estoque->descricao = strtoupper($request->input('nome'));
 
             $categoria = tipo_estoque::find($request->input('tipo'));
 
             $cat = str_split($categoria->descricao, 3);
-            
+
             if($ult_id === null) {
                 $estoque->cod_item = strtoupper($cat[0]) . $cod[0]. '_' . str_pad('1', 4, '0', STR_PAD_LEFT);
             } else {
                 $estoque->cod_item = strtoupper($cat[0]) . $cod[0]. '_' . str_pad($ult_id->id+1, 4, '0', STR_PAD_LEFT);
             }
-            
+
             $estoque->cod_prod = $request->input('cod_prod');
             $estoque->un_medida = $request->input('unidade');
             $estoque->qtd = $request->input('qtd');
@@ -349,7 +537,7 @@ class ContoladorEstoque extends Controller
 
                                 $consultaProd = new Estoque_geral();
                                 $consulta = $consultaProd->consultaProd($emit->infNFe->det[$i]->prod->cProd);
-                                
+
                                 //echo $emit->infNFe->det[$i]->prod->cProd.'<br>';
                                 //return $consulta;
 
@@ -366,9 +554,9 @@ class ContoladorEstoque extends Controller
                                         'ncm' => (string)$emit->infNFe->det[$i]->prod->NCM,
                                         'existe' => 0
                                     ];
-                                    
+
                                     $consulta_inter = Inter_entrada::where('cod_prod', $prod['codigo'])->get();
-                                       
+
                                     if(count($consulta_inter) == 0) {
                                         $intermediaria = new Inter_entrada();
 
@@ -386,8 +574,8 @@ class ContoladorEstoque extends Controller
                                     array_push($produtos, $prod);
 
                                 } else {
-                                    $estoque = Estoque_geral::find($consulta);
-
+                                    $estoque = Estoque_geral::with('fornecedores')->where('id', $consulta)->get();
+                                    //return $estoque;
                                     $entrada = new EntradaSaida();
                                     $entrada->estoque_geral_id = $consulta;
                                     $entrada->fornecedor_id = $consultarFornecedor[0]['id'];
@@ -395,15 +583,21 @@ class ContoladorEstoque extends Controller
                                     $entrada->situacao = '1';
                                     $entrada->nota = 'Entrada por XML';
                                     $entrada->nfe = $path;
-
-                                    $estoque->qtd = $estoque->qtd + (int)$emit->infNFe->det[$i]->prod->qCom;
-                                    $estoque->save();
-
+                                    $entrada->dia = date('d');
+                                    $entrada->mes = date('m');
+                                    $entrada->ano = date('Y');
+                                    foreach ($estoque as $item) {
+                                        foreach ($item->fornecedores as $tipo) {
+                                            $entrada->tipo_estoque_id = $tipo->pivot->tipo_estoque_id;
+                                        }
+                                        $item->qtd = $item->qtd + (int)$emit->infNFe->det[$i]->prod->qCom;
+                                        $item->save();
+                                    }
                                     $entrada->save();
                                 }
-                                
+
                             }
-                            
+
                         }
 
                         if($consulta != null) {
@@ -476,12 +670,12 @@ class ContoladorEstoque extends Controller
                     } else {
                         $estoque->cod_item = 'TEX' . $cod[0]. '_' . str_pad($ult_id->id+1, 4, '0', STR_PAD_LEFT);
                     }
-                    
+
                 } else if($tipo_estoque >= '5') {
                     $categoria = tipo_estoque::find($tipo_estoque);
 
                     $cat = str_split($categoria->descricao, 3);
-                    
+
                     if($ult_id === null) {
                         $estoque->cod_item = strtoupper($cat[0]) . $cod[0]. '_' . str_pad('1', 4, '0', STR_PAD_LEFT);
                     } else {
@@ -507,9 +701,13 @@ class ContoladorEstoque extends Controller
                 $entrada->estoque_geral_id = $relEstoque->id;
                 $entrada->fornecedor_id = $fornecedor_id;
                 $entrada->qtd = $item->qtd;
+                $entrada->tipo_estoque_id = $tipo_estoque;
                 $entrada->situacao = '1';
                 $entrada->nota = 'Entrada por XML';
                 $entrada->nfe = $path;
+                $entrada->dia = date('d');
+                $entrada->mes = date('m');
+                $entrada->ano = date('Y');
                 $entrada->save();
 
                 $item->delete();
@@ -520,7 +718,7 @@ class ContoladorEstoque extends Controller
     }
 
     public function entradaSession(Request $request) {
-        
+
         $estoque = Estoque_geral::find($request->input('produto'));
 
         $intermediaria = new Inter_entrada();
@@ -541,7 +739,7 @@ class ContoladorEstoque extends Controller
 
     public function mostrarSession(Request $request) {
         $intermediaria = Inter_entrada::all();
-        
+
         return json_encode($intermediaria);
     }
 
@@ -576,14 +774,20 @@ class ContoladorEstoque extends Controller
             foreach($estoque as $item) {
                 $item->qtd = $item->qtd + $value->qtd;
                 $item->save();
-            
+
                 $entrada = new EntradaSaida();
                 $entrada->estoque_geral_id = $item->id;
                 $entrada->fornecedor_id = $value->fornecedor_id;
                 $entrada->qtd = $value->qtd;
                 $entrada->situacao = '1';
-                $entrada->nota = 'Entrada por XML';
+                $entrada->nota = $request->input('nota');
+                foreach ($item->fornecedores as $tipo) {
+                    $entrada->tipo_estoque_id = $tipo->pivot->tipo_estoque_id;
+                }
                 $entrada->nfe = $path;
+                $entrada->dia = date('d');
+                $entrada->mes = date('m');
+                $entrada->ano = date('Y');
                 $entrada->save();
             }
 
@@ -597,7 +801,7 @@ class ContoladorEstoque extends Controller
     public function saidaEstoque(Request $request)
     {
         $item_saida = explode('-', $request->input('saida'));
-        
+
         $estoque = Estoque_geral::with('fornecedores')
             ->where('cod_item', $item_saida[0])
             ->select('id', 'qtd')
@@ -606,17 +810,20 @@ class ContoladorEstoque extends Controller
         foreach ($estoque as $item) {
             $item->qtd = $item->qtd - $request->input('qtd');
 
-            $entrada = new EntradaSaida();
-            $entrada->estoque_geral_id = $item->id;
-            $entrada->qtd = $request->input('qtd');
-            $entrada->nota = $request->input('nota');
-            $entrada->situacao = '0';
-            
-            foreach ($item->fornecedores as $fornecedor) {
-                $entrada->fornecedor_id = $fornecedor->id;
-            }
+            $saida = new EntradaSaida();
+            $saida->estoque_geral_id = $item->id;
+            $saida->qtd = $request->input('qtd');
+            $saida->nota = $request->input('nota');
+            $saida->situacao = '0';
 
-            $entrada->save();
+            foreach ($item->fornecedores as $fornecedor) {
+                $saida->fornecedor_id = $fornecedor->id;
+                $saida->tipo_estoque_id = $fornecedor->pivot->tipo_estoque_id;
+            }
+            $saida->dia = date('d');
+            $saida->mes = date('m');
+            $saida->ano = date('Y');
+            $saida->save();
             $item->save();
         }
 
@@ -663,7 +870,7 @@ class ContoladorEstoque extends Controller
             $estoque->cod_item = $request->input('cod_item');
             $estoque->ean_item = $request->input('ean_item');
             $estoque->ncm_item = $request->input('ncm_item');
-            $estoque->un_medida = $request->input('un_medida'); 
+            $estoque->un_medida = $request->input('un_medida');
             $estoque->qtd = $request->input('qtd');
             $estoque->estoque_min = $request->input('estoque_min');
             $estoque->estoque_max = $request->input('estoque_max');
@@ -692,13 +899,13 @@ class ContoladorEstoque extends Controller
             }
 
             //echo 'teste';
-        
+
             //return json_encode($estoque);
             return back()->with('resul', 'Item Atualizado');
         }
 
         return response('Produto não encontrado', 404);
-        
+
     }
 
     /**
@@ -718,6 +925,6 @@ class ContoladorEstoque extends Controller
 
             return json_encode(Estoque_geral::all());
         }
-       
+
     }
 }

@@ -44,17 +44,32 @@ Route::get('/enviarPedido/{id}', [
     'uses' => 'ControladorPedidoEstoque@enviarPedido'
 ]);
 
+Route::get('/relEntrada', [
+    'as' => 'relEntrada',
+    'uses' => 'ContoladorEstoque@relEntrada'
+]);
+
+Route::get('/filtrarEntrada/{data}', [
+    'as' => 'filtrarEntrada',
+    'uses' => 'ContoladorEstoque@filtrarEntrada'
+]);
+
+Route::get('/relComEntrada', [
+    'as' => 'relComEntrada',
+    'uses' => 'ContoladorEstoque@relComEntrada'
+]);
+
 Route::post('/novoGrupo', 'ContoladorEstoque@grupo');
 
 Route::put('/novoGrupo/{id}', 'ContoladorEstoque@grupoA');
 
 Route::get('/add_list', 'ContoladorEstoque@mostrarSession');
 
-Route::post('/add_list', 'ContoladorEstoque@entradaSession'); 
+Route::post('/add_list', 'ContoladorEstoque@entradaSession');
 
-Route::delete('/remover_list/{id}', 'ContoladorEstoque@removerEntrada'); 
+Route::delete('/remover_list/{id}', 'ContoladorEstoque@removerEntrada');
 
-Route::delete('/remover_list', 'ContoladorEstoque@removerTodaEntrada'); 
+Route::delete('/remover_list', 'ContoladorEstoque@removerTodaEntrada');
 
 Route::resource('/fornecedor', 'ContoladorFornecedor');
 
