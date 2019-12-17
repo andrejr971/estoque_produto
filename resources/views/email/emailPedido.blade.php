@@ -40,7 +40,7 @@
 <body>
     <h1>{{ $dados[0]['assunto'] }} - Pedido nº {{ $dados['id'] }}</h1>
     <h3>{{ ($dados[1]['obs'] !== null) ? $dados[1]['obs'] : ''}}</h3>
-    
+
     <table>
         <thead>
             <tr>
@@ -53,7 +53,7 @@
             @foreach ($dados['itens_pedido'] as $key => $item)
                 <tr>
                     <td>{{ $item['pedido_item_estoque']['descricao'] }}</td>
-                    <td>{{ $item['pedido_item_estoque']['ncm_item'] }}</td>
+                    <td>{{ $item['pedido_item_estoque']['cod_prod'] }}</td>
                     <td>{{ $item['qtd'] }}</td>
                 </tr>
             @endforeach

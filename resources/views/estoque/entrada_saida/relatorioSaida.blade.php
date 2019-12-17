@@ -5,7 +5,7 @@
         <div class="card-header">
             <div class="row">
                 <div class="col">
-                    <h1 class="card-title">Relatório - Entradas</h1>
+                    <h1 class="card-title">Relatório - Saidas</h1>
                 </div>
                 <div class="col-3">
                     <a href="#" data-toggle="modal" data-target="#modalPDF" class="btn btn-outline-info w-100">Gerar PDF</a>
@@ -17,11 +17,11 @@
         </div>
         <div class="row m-2">
             <div class="col-lg-6">
-                @component('componentes.graficoRelTipo')
+                @component('componentes.graficoRelTipoSaida')
                 @endcomponent
             </div>
             <div class="col-lg-6">
-                @component('componentes.graficoRelMes')
+                @component('componentes.graficoRelMesSaida')
                 @endcomponent
             </div>
         </div>
@@ -132,7 +132,7 @@
 
     <div class="modal fade" id="modalPDF" tabindex="-1" role="dialog" aria-labelledby="tipoModal" aria-hidden="true">
             <div class="modal-dialog" role="document">
-                <form action="{{ route('gerarPDFEntrada') }}" method="POST" target="blank" class="form-horizontal" id="formFiltro">
+                <form action="{{ route('gerarPDFSaida') }}" method="POST" target="blank" class="form-horizontal" id="formFiltro">
                     @csrf
                     <div class="modal-content">
                         <div class="modal-header">
@@ -309,7 +309,7 @@
             categoria_id = $('input[name="tipo"]:checked').val();
 
             if(fornecedor_id == 0) {
-                $.get('/api/filtrarEntrada/' + mes, { page : 1 }, function(response) {
+                $.get('/api/filtrarSaida/' + mes, { page : 1 }, function(response) {
                     renderTabela(response.data);
                     renderPaginacao(response);
 
@@ -320,7 +320,7 @@
                 });
             } else {
                 if(categoria_id > 0) {
-                    $.get('/api/filtroRelatorioCategoriasM/'+ fornecedor_id + '/' +  mes + '/' + categoria_id, { page : 1 }, function(response) {
+                    $.get('/api/filtroRelatorioCategoriasMSaida/'+ fornecedor_id + '/' +  mes + '/' + categoria_id, { page : 1 }, function(response) {
                         renderTabela(response.data);
                         renderPaginacao(response);
 
@@ -330,7 +330,7 @@
                         $('#card_title').html('Entradas do mês: ' + mes);
                     });
                 } else {
-                    $.get('/api/filtroRelatorioCategoriasM/'+ fornecedor_id + '/' + mes, { page : 1 }, function(response) {
+                    $.get('/api/filtroRelatorioCategoriasMSaida/'+ fornecedor_id + '/' + mes, { page : 1 }, function(response) {
                         renderTabela(response.data);
                         renderPaginacao(response);
 
@@ -344,7 +344,7 @@
         }
 
         function carregarEntrada2(mes, pagina) {
-            $.get('/api/filtrarEntrada/' + mes, { page : pagina }, function(response) {
+            $.get('/api/filtrarSaida/' + mes, { page : pagina }, function(response) {
                 renderTabela(response.data);
                 renderPaginacao(response);
 
@@ -357,7 +357,7 @@
         function carregarEntrada(pagina) {
             //$('input[name="tipo"]').attr('checked', false);
             $('#tipo').filter('[value="0"]').attr('checked', true);
-            $.get('/api/relEntrada', { page : pagina }, function(response) {
+            $.get('/api/relSaida', { page : pagina }, function(response) {
                 renderTabela(response.data);
                 renderPaginacao(response);
 
@@ -368,7 +368,7 @@
         }
 
         function filtroForn(id) {
-            $.get('/api/filtroRelatorio/'+ id, function(response) {
+            $.get('/api/filtroRelatorioSaida/'+ id, function(response) {
                 $('input[name="tipo"]').attr('checked', false);
                 $('#tipo').filter('[value="0"]').attr('checked', true);
                 renderTabela(response.data);
@@ -386,7 +386,7 @@
 
             if(fornecedor_id > 0) {
                 //window.location.href = '/api/filtroRelatorioCat/'+ fornecedor_id + '/' + id;
-                $.get('/api/filtroRelatorioCat/'+ fornecedor_id + '/' + id, function(response) {
+                $.get('/api/filtroRelatorioCatSaida/'+ fornecedor_id + '/' + id, function(response) {
                     renderTabela(response.data);
                     renderPaginacao(response);
 
@@ -396,7 +396,7 @@
 
                 });
             } else {
-                $.get('/api/filtroRelatorioCategorias/'+ id, function(response) {
+                $.get('/api/filtroRelatorioCategoriasSaida/'+ id, function(response) {
                     renderTabela(response.data);
                     renderPaginacao(response);
 
@@ -446,7 +446,6 @@
             }
 
         });
-
 
         $(document).ready(function() {
             $('#fornecedor').filter('[value="0"]').attr('checked', true);

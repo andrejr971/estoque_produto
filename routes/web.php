@@ -63,14 +63,25 @@ Route::prefix('/estoque')->group(function() {
         'uses' => 'ContoladorEstoque@verEstoqueBaixo'
     ]);
 
+
+    Route::get('/ordemCompra', [
+        'as' => 'ordemCompra',
+        'uses' => 'ContoladorEstoque@verOrdemCompra'
+    ]);
+
     Route::get('/gerarPDF', [
         'as' => 'gerarPDF',
         'uses' => 'ContoladorEstoque@gerarPDF'
     ]);
 
-    Route::get('/gerarPDFEntrada', [
-        'as' => 'gerarPDFEntrada',
-        'uses' => 'ContoladorEstoque@gerarPDFEntrada'
+    Route::get('/relatorioEntrada', [
+        'as' => 'relatorioEntrada',
+        'uses' => 'ContoladorEstoque@relatorioEntrada'
+    ]);
+
+    Route::get('/relatorioSaida', [
+        'as' => 'relatorioSaida',
+        'uses' => 'ContoladorEstoque@relatorioSaida'
     ]);
 
     Route::get('/teste', [
@@ -111,7 +122,7 @@ Route::prefix('/estoque')->group(function() {
     });
 
     Route::prefix('/carrinhoEstoque')->group( function() {
-        
+
         Route::get('/', [
             'as' => 'carrinhoPedido',
             'uses' => 'ControladorPedidoEstoque@index'
@@ -153,7 +164,7 @@ Route::prefix('/estoque')->group(function() {
             'as' => 'pedidosEstoqueEN',
             'uses' => 'ControladorPedidoEstoque@pedidosEstoqueEN'
         ]);
-        
+
         Route::get('/autorizados', [
             'as' => 'pedidosEstoqueCP',
             'uses' => 'ControladorPedidoEstoque@pedidosEstoqueCP'
@@ -188,7 +199,7 @@ Route::prefix('/estoque')->group(function() {
     Route::get('/adicionarPedido', function() {
         return redirect()->route('verEstoqueBaixo');
     });
-    
+
     Route::get('/estoqueFornecedor/{id}', [
         'as' => 'estoqueFornecedor',
         'uses' => 'ControladorPedidoEstoque@estoqueFornecedor'
@@ -204,6 +215,17 @@ Route::post('/entrada/manual', [
     'as' => 'adicionarEntradaManual',
     'uses' => 'ContoladorEstoque@adicionarEntradaManual'
 ]);
+
+Route::post('/entrada/pdf', [
+    'as' => 'gerarPDFEntrada',
+    'uses' => 'ContoladorEstoque@gerarPDFEntrada'
+]);
+
+Route::post('/saida/pdf', [
+    'as' => 'gerarPDFSaida',
+    'uses' => 'ContoladorEstoque@gerarPDFSaida'
+]);
+
 
 Route::put('/saida', [
     'as' => 'saidaEstoque',

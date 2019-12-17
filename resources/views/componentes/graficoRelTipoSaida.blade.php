@@ -8,7 +8,7 @@
     <script>
         $(function () {
             "use strict";
-            $.get('/api/relComEntrada', function(response) {
+            $.get('/api/relComSaida', function(response) {
                // LINE CHART
                var line = new Morris.Bar({
                     element: 'morris-line-chart',
@@ -19,19 +19,6 @@
                     resize: true,
                     lineColors: ['#009efb'],
                 });
-                /*var line = new Morris.Line({
-                    element: 'morris-line-chart',
-                    resize: true,
-                    data: response,
-                    xkey: 'label',
-                    ykeys: ['value'],
-                    labels: ['Quantidade'],
-                    gridLineColor: '#eef0f2',
-                    lineColors: ['#009efb'],
-                    parseTime: false,
-                    lineWidth: 1,
-                    hideHover: 'auto'
-                });*/
             });
         });
     </script>
@@ -39,7 +26,7 @@
 
 <div class="card mt-3">
     <div class="card-body">
-        <h4 class="card-title text-center">Relação de Entradas por Categoria deste Mês</h4>
+        <h4 class="card-title text-center">Relação de Saida por Categoria deste Mês</h4>
         <div id="morris-line-chart"></div>
     </div>
 </div>

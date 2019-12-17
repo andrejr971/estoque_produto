@@ -37,17 +37,15 @@
                             Gerar Relatório
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item" href="{{ route('gerarPDFEntrada') }}">Entrada</a>
-                            <a class="dropdown-item" href="#">Saída</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Entrada e Saída</a>
+                            <a class="dropdown-item" href="{{ route('relatorioEntrada') }}">Entrada</a>
+                            <a class="dropdown-item" href="{{ route('relatorioSaida') }}">Saída</a>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="collapse mt-2 w-100" id="retirada">
                 <div style="height: 5px;" class="bg-danger"></div>
-                <div class="card card-body">                    
+                <div class="card card-body">
                     <h3 class="card-title text-center">Retirada do Estoque</h3>
                     <form action="{{ route('saidaEstoque') }}" method="POST">
                         @csrf
@@ -132,37 +130,6 @@
             <div class="row mt-3">
                 <div class="col">
                     <div class="card">
-                        <div class="card-header bg-success text-light">
-                            <h2 class="card-title">Ultimas Entradas</h2>
-                        </div>
-                        <div class="card-body">
-                            <table class="table table-sm table-bordered table-striped table-responsive-sm">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>Fornecedor</th>
-                                        <th>Item</th>
-                                        <th>Data</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($entrada as $item)
-                                        <tr>
-                                            <td>{{ $item->fornecedores->nome }}</td>
-                                            <td>{{ $item->estoque->descricao }}</td>
-                                            <td>{{ $item->created_at->format('d/m/Y') }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-
-                        </div>
-                        <div class="card-footer">
-                            <a href="#" class="btn btn-outline-success w-100">Ver mais</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card">
                         <div class="card-header bg-danger text-light">
                             <h2 class="card-title">Produtos com baixo Estoque</h2>
                         </div>
@@ -190,7 +157,7 @@
                                             </tr>
                                             @php
                                                 $cont ++;
-                                                
+
                                                 if($cont == 3) {
                                                     break;
                                                 }
@@ -205,8 +172,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row mt-3">
                 <div class="col">
                     <div class="card">
                         <div class="card-header bg-secondary text-light">
@@ -236,7 +201,7 @@
                                             </tr>
                                             @php
                                                 $cont ++;
-                                                
+
                                                 if($cont == 3) {
                                                     break;
                                                 }
@@ -248,31 +213,44 @@
 
                         </div>
                         <div class="card-footer">
-                            <a href="#" class="btn btn-outline-secondary w-100">Ver mais</a>
+                            <a href="{{ route('ordemCompra') }}" class="btn btn-outline-secondary w-100">Ver mais</a>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col">
+                    @component('componentes.graficoRelMes')
+                    @endcomponent
+                </div>
                 <div class="col">
                     <div class="card">
-                        <div class="card-header bg-warning text-light">
-                            <h2 class="card-title">Produtos com baixo Estoque</h2>
+                        <div class="card-header bg-success text-light">
+                            <h2 class="card-title">Ultimas Entradas</h2>
                         </div>
                         <div class="card-body">
-                            <table id="" class="table table-sm table-bordered table-striped table-responsive-sm">
+                            <table class="table table-sm table-bordered table-striped table-responsive-sm">
                                 <thead class="thead-light">
                                     <tr>
-                                        <th>Produto</th>
-                                        <th>QTD/UN</th>
                                         <th>Fornecedor</th>
+                                        <th>Item</th>
+                                        <th>Data</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    
+                                    @foreach ($entrada as $item)
+                                        <tr>
+                                            <td>{{ $item->fornecedores->nome }}</td>
+                                            <td>{{ $item->estoque->descricao }}</td>
+                                            <td>{{ $item->created_at->format('d/m/Y') }}</td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
+
                         </div>
                         <div class="card-footer">
-                            <a href="#" class="btn btn-outline-warning w-100">Ver mais</a>
+                            <a href="{{ route('relatorioEntrada') }}" class="btn btn-outline-success w-100">Ver mais</a>
                         </div>
                     </div>
                 </div>
@@ -305,9 +283,9 @@
                             <div class="form-group xml">
                                 <div class="row">
                                     <div class="col">
-                                        <input type="file" name="upFile" accept=".xml">  
+                                        <input type="file" name="upFile" accept=".xml">
                                     </div>
-                                </div>  
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -419,7 +397,7 @@
                 axios.get('/api/estoque')
                 .then(function(response) {
                     for(dado of response.data) {
-                        if(dado.qtd > 1) {
+                        if(dado.qtd > 5) {
                             dados.push(dado.cod_item + ' - ' + dado.descricao);
                         }
                     }
@@ -430,6 +408,6 @@
                 });
             });
         });
-        
+
     </script>
 @endsection

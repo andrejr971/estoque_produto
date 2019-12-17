@@ -44,6 +44,53 @@ Route::get('/enviarPedido/{id}', [
     'uses' => 'ControladorPedidoEstoque@enviarPedido'
 ]);
 
+/**Saida */
+Route::get('/relSaida', [
+    'as' => 'relSaida',
+    'uses' => 'ContoladorEstoque@relSaida'
+]);
+
+Route::get('/filtrarEntrada/{data}', [
+    'as' => 'filtrarEntrada',
+    'uses' => 'ContoladorEstoque@filtrarEntrada'
+]);
+
+Route::get('/relComSaida', [
+    'as' => 'relComSaida',
+    'uses' => 'ContoladorEstoque@relComSaida'
+]);
+
+Route::get('/filtroRelatorioSaida/{id}', [
+    'as' => 'filtroRelatorioSaida',
+    'uses' => 'ContoladorEstoque@filtroRelatorioSaida'
+]);
+
+Route::get('/filtroRelatorioCatSaida/{id}/{opcao}', [
+    'as' => 'filtroRelatorioCatSaida',
+    'uses' => 'ContoladorEstoque@filtroRelatorioCatSaida'
+]);
+
+Route::get('/filtroRelatorioCategoriasSaida/{opcao}', [
+    'as' => 'filtroRelatorioCategoriasSaida',
+    'uses' => 'ContoladorEstoque@filtroRelatorioCategoriasSaida'
+]);
+
+Route::get('/filtroRelatorioCategoriasMSaida/{id}/{mes}', [
+    'as' => 'filtroRelatorioCategoriasMSaida',
+    'uses' => 'ContoladorEstoque@filtroRelatorioCategoriasMSaida'
+]);
+
+Route::get('/filtroRelatorioCategoriasMSaida/{id}/{mes}/{opcao}', [
+    'as' => 'filtroRelatorioCategoriasMSaida',
+    'uses' => 'ContoladorEstoque@filtroRelatorioCategoriasMCatSaida'
+]);
+
+Route::get('/relSaidaMes', [
+    'as' => 'relSaidaMes',
+    'uses' => 'ContoladorEstoque@relSaidaMes'
+]);
+
+/**Entrada */
 Route::get('/relEntrada', [
     'as' => 'relEntrada',
     'uses' => 'ContoladorEstoque@relEntrada'
@@ -57,6 +104,36 @@ Route::get('/filtrarEntrada/{data}', [
 Route::get('/relComEntrada', [
     'as' => 'relComEntrada',
     'uses' => 'ContoladorEstoque@relComEntrada'
+]);
+
+Route::get('/filtroRelatorio/{id}', [
+    'as' => 'filtroRelatorio',
+    'uses' => 'ContoladorEstoque@filtroRelatorio'
+]);
+
+Route::get('/filtroRelatorioCat/{id}/{opcao}', [
+    'as' => 'filtroRelatorioCat',
+    'uses' => 'ContoladorEstoque@filtroRelatorioCat'
+]);
+
+Route::get('/filtroRelatorioCategorias/{opcao}', [
+    'as' => 'filtroRelatorioCategorias',
+    'uses' => 'ContoladorEstoque@filtroRelatorioCategorias'
+]);
+
+Route::get('/filtroRelatorioCategoriasM/{id}/{mes}', [
+    'as' => 'filtroRelatorioCategoriasM',
+    'uses' => 'ContoladorEstoque@filtroRelatorioCategoriasM'
+]);
+
+Route::get('/filtroRelatorioCategoriasM/{id}/{mes}/{opcao}', [
+    'as' => 'filtroRelatorioCategoriasM',
+    'uses' => 'ContoladorEstoque@filtroRelatorioCategoriasMCat'
+]);
+
+Route::get('/relEntradaMes', [
+    'as' => 'relEntradaMes',
+    'uses' => 'ContoladorEstoque@relEntradaMes'
 ]);
 
 Route::post('/novoGrupo', 'ContoladorEstoque@grupo');

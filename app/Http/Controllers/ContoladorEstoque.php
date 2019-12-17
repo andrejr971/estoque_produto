@@ -87,6 +87,9 @@ class ContoladorEstoque extends Controller
         return view('estoque.ver.estoqueBaixo');
     }
 
+    public function verOrdemCompra() {
+        return view('estoque.ver.ordemCompras');
+    }
     //Gerar PDF
     public function gerarPDF()
     {
@@ -96,7 +99,387 @@ class ContoladorEstoque extends Controller
                     ->stream('nome-arquivo-pdf-gerado.pdf');*/
     }
 
-    public function gerarPDFEntrada() {
+    public function gerarPDFSaida(Request $request)
+    {
+        $categorias = $request->input('tipoM');
+        $fornecedores = $request->input('fornecedorM');
+        $arm = [];
+        $contador = 0;
+        if(isset($fornecedores)) {
+            foreach ($fornecedores as $key => $fornecedor) {
+                if(empty($fornecedor)) {
+                    unset($fornecedores[$key]);
+                } else {
+                    if(isset($categorias)) {
+                        foreach ($categorias as $key => $categoria) {
+                            if(empty($categoria)) {
+                                unset($categorias[$key]);
+                            } else {
+                                $filtro = EntradaSaida::with('estoque')
+                                        ->where('situacao', '0')
+                                        ->where('tipo_estoque_id', $categoria)
+                                        ->where('fornecedor_id', $fornecedor)
+                                        ->get();
+
+                                foreach ($filtro as $item) {
+                                    $arm[$contador] = [
+                                        'estoque' => [
+                                            'descricao' => $item->estoque->descricao,
+                                            'cod_prod' => $item->estoque->cod_prod
+                                        ],
+                                        'qtd' => $item->qtd,
+                                        'fornecedores' => ['nome' => $item->fornecedores->nome],
+                                        'created_at' => $item->created_at
+
+                                    ];
+
+                                    $contador ++;
+                                }
+                            }
+                        }
+                    } else {
+                        $filtro = EntradaSaida::with('estoque')
+                                        ->where('situacao', '0')
+                                        ->where('fornecedor_id', $fornecedor)
+                                        ->get();
+
+                        foreach ($filtro as $item) {
+                            $arm[$contador] = [
+                                'estoque' => [
+                                    'descricao' => $item->estoque->descricao,
+                                    'cod_prod' => $item->estoque->cod_prod
+                                ],
+                                'qtd' => $item->qtd,
+                                'fornecedores' => ['nome' => $item->fornecedores->nome],
+                                'created_at' => $item->created_at
+
+                            ];
+
+                            $contador ++;
+                        }
+                    }
+                }
+            }
+        } else {
+            return \PDF::loadView('estoque.pdf.PDFSaida', [
+                'entrada' => EntradaSaida::with('estoque')
+                            ->where('situacao', '0')
+                            ->get(),
+            ])->setPaper('a4', 'landscape')
+                        ->stream('nome-arquivo-pdf-gerado.pdf');
+        }
+        //return $arm;
+
+        return \PDF::loadView('estoque.pdf.PDFSaida', [
+            'entrada' => $arm,
+        ])->setPaper('a4', 'landscape')
+                    ->stream('nome-arquivo-pdf-gerado.pdf');
+
+
+        /*return \PDF::loadView('estoque.pdf.PDFEntrada', [
+            'entrada' => Estoque_geral::with('fornecedores')->get(),
+        ])->setPaper('a4', 'landscape')
+                    ->stream('nome-arquivo-pdf-gerado.pdf');*/
+    }
+
+    public function gerarPDFEntrada(Request $request)
+    {
+        $categorias = $request->input('tipoM');
+        $fornecedores = $request->input('fornecedorM');
+        $arm = [];
+        $contador = 0;
+        if(isset($fornecedores)) {
+            foreach ($fornecedores as $key => $fornecedor) {
+                if(empty($fornecedor)) {
+                    unset($fornecedores[$key]);
+                } else {
+                    if(isset($categorias)) {
+                        foreach ($categorias as $key => $categoria) {
+                            if(empty($categoria)) {
+                                unset($categorias[$key]);
+                            } else {
+                                $filtro = EntradaSaida::with('estoque')
+                                        ->where('situacao', '1')
+                                        ->where('tipo_estoque_id', $categoria)
+                                        ->where('fornecedor_id', $fornecedor)
+                                        ->get();
+
+                                foreach ($filtro as $item) {
+                                    $arm[$contador] = [
+                                        'estoque' => [
+                                            'descricao' => $item->estoque->descricao,
+                                            'cod_prod' => $item->estoque->cod_prod
+                                        ],
+                                        'qtd' => $item->qtd,
+                                        'fornecedores' => ['nome' => $item->fornecedores->nome],
+                                        'created_at' => $item->created_at
+
+                                    ];
+
+                                    $contador ++;
+                                }
+                            }
+                        }
+                    } else {
+                        $filtro = EntradaSaida::with('estoque')
+                                        ->where('situacao', '1')
+                                        ->where('fornecedor_id', $fornecedor)
+                                        ->get();
+
+                        foreach ($filtro as $item) {
+                            $arm[$contador] = [
+                                'estoque' => [
+                                    'descricao' => $item->estoque->descricao,
+                                    'cod_prod' => $item->estoque->cod_prod
+                                ],
+                                'qtd' => $item->qtd,
+                                'fornecedores' => ['nome' => $item->fornecedores->nome],
+                                'created_at' => $item->created_at
+
+                            ];
+
+                            $contador ++;
+                        }
+                    }
+                }
+            }
+        } else {
+            return \PDF::loadView('estoque.pdf.PDFEntrada', [
+                'entrada' => EntradaSaida::with('estoque')
+                            ->where('situacao', '1')
+                            ->get(),
+            ])->setPaper('a4', 'landscape')
+                        ->stream('nome-arquivo-pdf-gerado.pdf');
+        }
+        //return $arm;
+
+        return \PDF::loadView('estoque.pdf.PDFEntrada', [
+            'entrada' => $arm,
+        ])->setPaper('a4', 'landscape')
+                    ->stream('nome-arquivo-pdf-gerado.pdf');
+
+
+        /*return \PDF::loadView('estoque.pdf.PDFEntrada', [
+            'entrada' => Estoque_geral::with('fornecedores')->get(),
+        ])->setPaper('a4', 'landscape')
+                    ->stream('nome-arquivo-pdf-gerado.pdf');*/
+    }
+
+    public function relatorioSaida() {
+        $mes = [
+            1 => 'Jan',
+            2 => 'Fev',
+            3 => 'Mar',
+            4 => 'Abr',
+            5 => 'Mai',
+            6 => 'Jun',
+            7 => 'Jul',
+            8 => 'Ago',
+            9 => 'Set',
+            10 => 'Out',
+            11 => 'Nov',
+            12 => 'Dez'
+        ];
+        $meses = [];
+
+        for($i = date('m'); $i >= 1; $i--) {
+            array_push($meses, $mes[$i]);
+        }
+
+        $entrada =  EntradaSaida::with('estoque', 'fornecedores', 'tipo_estoque')
+                ->where('situacao', '0')
+                ->orderBy('estoque_geral_id')
+                ->get();
+
+        $entrada2 = $entrada->groupBy('tipo_estoque_id');
+        $relEntradaTipo = [];
+
+        foreach ($entrada2 as $itens) {
+            $soma = 0;
+            $tipo_estoque_nome = '';
+
+            $armTipo = 0;
+            foreach ($itens as $item) {
+                if($item['tipo_estoque']['id'] == $armTipo) {
+                    $soma = $soma + $item['qtd'];
+                } else {
+                    $soma = $item['qtd'];
+
+                }
+                $armTipo = $item['tipo_estoque']['id'];
+                $tipo_estoque_nome = $item['tipo_estoque']['descricao'];
+            }
+
+            array_push($relEntradaTipo, [
+                'tipo_estoque_id' => $item['tipo_estoque']['id'],
+                'tipo_estoque_nome' => $tipo_estoque_nome,
+                'qtd' => $soma
+            ]);
+        }
+
+        return view('estoque.entrada_saida.relatorioSaida', [
+            'meses' => $meses,
+            'dados' => $relEntradaTipo,
+            'categoria' => tipo_estoque::select('id', 'descricao')->get(),
+            'fornecedores' => Fornecedor::select('id', 'nome')->get()
+        ]);
+    }
+
+    public function relSaida() {
+        return EntradaSaida::with('estoque', 'fornecedores')
+                ->where('situacao', '0')
+                ->whereMonth('created_at', date('m'))
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+    }
+
+    public function filtrarSaida($mes) {
+        return EntradaSaida::with('estoque', 'fornecedores')
+                ->where('situacao', '0')
+                ->where('mes', $mes)
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+    }
+
+    public function relComSaida() {
+        $entrada =  EntradaSaida::with('estoque', 'fornecedores', 'tipo_estoque')
+                ->where('situacao', '0')
+                ->whereMonth('created_at', date('m'))
+                ->orderBy('estoque_geral_id')
+                ->get();
+
+        $entrada2 = $entrada->groupBy('tipo_estoque_id');
+        $relEntradaTipo = [];
+
+        foreach ($entrada2 as $itens) {
+            $soma = 0;
+            $tipo_estoque_nome = '';
+
+            $armTipo = 0;
+            foreach ($itens as $item) {
+                if($item['tipo_estoque']['id'] == $armTipo) {
+                    $soma = $soma + $item['qtd'];
+                } else {
+                    $soma = $item['qtd'];
+
+                }
+                $armTipo = $item['tipo_estoque']['id'];
+                $tipo_estoque_nome = $item['tipo_estoque']['descricao'];
+            }
+
+            array_push($relEntradaTipo, [
+                'label' => $tipo_estoque_nome,
+                'value' => $soma
+            ]);
+        }
+
+        return $relEntradaTipo;
+
+    }
+
+    public function relSaidaMes() {
+        $entrada =  EntradaSaida::with('tipo_estoque')
+                ->where('situacao', '0')
+                ->orderBy('estoque_geral_id')
+                ->whereYear('created_at', date('Y'))
+                ->get();
+
+        $entrada2 = $entrada->groupBy('mes');
+
+        $mes = [
+            1 => [1, 'Janeiro'],
+            2 => [2, 'Fevereiro'],
+            3 => [3, 'Março'],
+            4 => [4, 'Abril'],
+            5 => [5, 'Maio'],
+            6 => [6, 'Junho'],
+            7 => [7, 'Julho'],
+            8 => [8, 'Agosto'],
+            9 => [9, 'Setembro'],
+            10 => [10, 'Outubro'],
+            11 => [11, 'Novembro'],
+            12 => [12, 'Dezembro']
+        ];
+        $meses = [];
+
+        //return $entrada2;
+        $soma = 0;
+        $i = 12;
+        $cont = 0;
+        foreach ($entrada2 as $itens) {
+            if($cont == 5) {
+                break;
+            }
+            //foreach ($itens as $value) {
+                $soma = $itens->sum('qtd');
+                //echo $itens[0]['mes'];
+                array_push($meses,[
+                    'label' => $mes[$i][1],
+                    'value' => $soma,
+                    //'tipo' => $value[0]['tipo_estoque']['descricao']
+                ]);
+            //}
+            $i --;
+
+            $cont ++;
+        }
+
+        return $meses;
+    }
+
+    public function filtroRelatorioSaida($id)
+    {
+        return EntradaSaida::with('estoque')
+        ->where('situacao', '0')
+        ->where('fornecedor_id', $id)
+        ->whereMonth('created_at', date('m'))
+        ->orderBy('created_at',  'desc')
+        ->paginate(10);
+    }
+
+    public function filtroRelatorioCatSaida($id, $opcao)
+    {
+        return EntradaSaida::with('estoque')
+        ->where('situacao', '0')
+        ->where('fornecedor_id', $id)
+        ->where('tipo_estoque_id', $opcao)
+        ->whereMonth('created_at', date('m'))
+        ->orderBy('created_at',  'desc')
+        ->paginate(10);
+    }
+
+    public function filtroRelatorioCategoriasSaida($opcao)
+    {
+        return EntradaSaida::with('estoque')
+        ->where('situacao', '0')
+        ->where('tipo_estoque_id', $opcao)
+        ->whereMonth('created_at', date('m'))
+        ->orderBy('created_at',  'desc')
+        ->paginate(10);
+    }
+
+    public function filtroRelatorioCategoriasMSaida($id, $mes)
+    {
+        return EntradaSaida::with('estoque')
+        ->where('situacao', '0')
+        ->where('fornecedor_id', $id)
+        ->where('mes', $mes)
+        ->orderBy('created_at',  'desc')
+        ->paginate(10);
+    }
+
+    public function filtroRelatorioCategoriasMCatSaida($id, $mes, $cat)
+    {
+        return EntradaSaida::with('estoque')
+        ->where('situacao', '0')
+        ->where('fornecedor_id', $id)
+        ->where('tipo_estoque_id', $cat)
+        ->where('mes', $mes)
+        ->orderBy('created_at',  'desc')
+        ->paginate(10);
+    }
+
+    public function relatorioEntrada() {
         $mes = [
             1 => 'Jan',
             2 => 'Fev',
@@ -150,7 +533,9 @@ class ContoladorEstoque extends Controller
 
         return view('estoque.entrada_saida.relatorioEntrada', [
             'meses' => $meses,
-            'dados' => $relEntradaTipo
+            'dados' => $relEntradaTipo,
+            'categoria' => tipo_estoque::select('id', 'descricao')->get(),
+            'fornecedores' => Fornecedor::select('id', 'nome')->get()
         ]);
     }
 
@@ -165,7 +550,7 @@ class ContoladorEstoque extends Controller
     public function filtrarEntrada($mes) {
         return EntradaSaida::with('estoque', 'fornecedores')
                 ->where('situacao', '1')
-                ->whereMonth('created_at', $mes)
+                ->where('mes', $mes)
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
     }
@@ -207,103 +592,107 @@ class ContoladorEstoque extends Controller
     }
 
     public function relEntradaMes() {
-        $entrada =  EntradaSaida::with('estoque', 'fornecedores', 'tipo_estoque')
+        $entrada =  EntradaSaida::with('tipo_estoque')
                 ->where('situacao', '1')
                 ->orderBy('estoque_geral_id')
+                ->whereYear('created_at', date('Y'))
                 ->get();
 
-        $entrada2 = $entrada->groupBy('tipo_estoque_id');
-        $relEntradaTipo = [];
+        $entrada2 = $entrada->groupBy('mes');
 
         $mes = [
-            1 => 'Jan',
-            2 => 'Fev',
-            3 => 'Mar',
-            4 => 'Abr',
-            5 => 'Mai',
-            6 => 'Jun',
-            7 => 'Jul',
-            8 => 'Ago',
-            9 => 'Set',
-            10 => 'Out',
-            11 => 'Nov',
-            12 => 'Dez'
+            1 => [1, 'Janeiro'],
+            2 => [2, 'Fevereiro'],
+            3 => [3, 'Março'],
+            4 => [4, 'Abril'],
+            5 => [5, 'Maio'],
+            6 => [6, 'Junho'],
+            7 => [7, 'Julho'],
+            8 => [8, 'Agosto'],
+            9 => [9, 'Setembro'],
+            10 => [10, 'Outubro'],
+            11 => [11, 'Novembro'],
+            12 => [12, 'Dezembro']
         ];
         $meses = [];
 
-        for($i = date('m'); $i >= 5; $i--) {
-            array_push($meses, $mes[$i]);
-        }
-
+        //return $entrada2;
+        $soma = 0;
+        $i = 12;
+        $cont = 0;
         foreach ($entrada2 as $itens) {
-            $arm = 0;
-            $soma = 0;
-            /*$descricao = '';
-            $preco = 0;
-            $fornecedor_id = 0;
-            $fornecedor_nome = '';
-            $nota = '';
-            $nfe = '';
-            $tipo_estoque_id = '';*/
-            $tipo_estoque_nome = '';
-
-            $armTipo = 0;
-            foreach ($itens as $item) {
-                if($item['tipo_estoque']['id'] == $armTipo) {
-                    $soma = $soma + $item['qtd'];
-                } else {
-                    $soma = $item['qtd'];
-
-                }
-                $armTipo = $item['tipo_estoque']['id'];
-                $tipo_estoque_nome = $item['tipo_estoque']['descricao'];
+            if($cont == 5) {
+                break;
             }
+            //foreach ($itens as $value) {
+                $soma = $itens->sum('qtd');
+                //echo $itens[0]['mes'];
+                array_push($meses,[
+                    'label' => $mes[$i][1],
+                    'value' => $soma,
+                    //'tipo' => $value[0]['tipo_estoque']['descricao']
+                ]);
+            //}
+            $i --;
 
-            array_push($relEntradaTipo, [
-                //'tipo_estoque_id' => $item['tipo_estoque']['id'],
-                'label' => $tipo_estoque_nome,
-                'value' => $soma
-            ]);
-            /*foreach ($itens as $item) {
-                if($item['estoque_geral_id'] == $arm){
-                    $soma = $soma + $item['qtd'];
-                    $descricao = $item['estoque']['descricao'];
-                    $preco = $item['estoque']['preco'];
-                    $fornecedor_id = $item['fornecedores']['id'];
-                    $fornecedor_nome = $item['fornecedores']['nome'];
-                    $tipo_estoque_id = $item['tipo_estoque']['id'];
-                    $tipo_estoque_nome = $item['tipo_estoque']['descricao'];
-                    $nota = $item['nota'];
-                    $nfe = $item['nfe'];
-                } else {
-                    $soma = $item['qtd'];
-                    $descricao = $item['estoque']['descricao'];
-                    $preco = $item['estoque']['preco'];
-                    $fornecedor_id = $item['fornecedores']['id'];
-                    $fornecedor_nome = $item['fornecedores']['nome'];
-                    $tipo_estoque_id = $item['tipo_estoque']['id'];
-                    $tipo_estoque_nome = $item['tipo_estoque']['descricao'];
-                    $nota = $item['nota'];
-                    $nfe = $item['nfe'];
-                }
-                $arm = $item['estoque_geral_id'];
-            }
-            array_push($relEntrada, [
-                'estoque_geral_id' => $arm,
-                'descricao' => $descricao,
-                'qtd' => $soma,
-                'preco' => number_format($preco, '2', ',', '.'),
-                'fornecedor_id' => $fornecedor_id,
-                'fornecedor_nome' => $fornecedor_nome,
-                'nota' => $nota,
-                'nfe' => $nfe,
-                'tipo_estoque_id' => $tipo_estoque_id,
-                'tipo_estoque_nome' => $tipo_estoque_nome
-            ]);*/
+            $cont ++;
         }
 
-        return $relEntradaTipo;
+        return $meses;
     }
+
+    public function filtroRelatorio($id)
+    {
+        return EntradaSaida::with('estoque')
+        ->where('situacao', '1')
+        ->where('fornecedor_id', $id)
+        ->whereMonth('created_at', date('m'))
+        ->orderBy('created_at',  'desc')
+        ->paginate(10);
+    }
+
+    public function filtroRelatorioCat($id, $opcao)
+    {
+        return EntradaSaida::with('estoque')
+        ->where('situacao', '1')
+        ->where('fornecedor_id', $id)
+        ->where('tipo_estoque_id', $opcao)
+        ->whereMonth('created_at', date('m'))
+        ->orderBy('created_at',  'desc')
+        ->paginate(10);
+    }
+
+    public function filtroRelatorioCategorias($opcao)
+    {
+        return EntradaSaida::with('estoque')
+        ->where('situacao', '1')
+        ->where('tipo_estoque_id', $opcao)
+        ->whereMonth('created_at', date('m'))
+        ->orderBy('created_at',  'desc')
+        ->paginate(10);
+    }
+
+    public function filtroRelatorioCategoriasM($id, $mes)
+    {
+        return EntradaSaida::with('estoque')
+        ->where('situacao', '1')
+        ->where('fornecedor_id', $id)
+        ->where('mes', $mes)
+        ->orderBy('created_at',  'desc')
+        ->paginate(10);
+    }
+
+    public function filtroRelatorioCategoriasMCat($id, $mes, $cat)
+    {
+        return EntradaSaida::with('estoque')
+        ->where('situacao', '1')
+        ->where('fornecedor_id', $id)
+        ->where('tipo_estoque_id', $cat)
+        ->where('mes', $mes)
+        ->orderBy('created_at',  'desc')
+        ->paginate(10);
+    }
+
 
     public function index()
     {
@@ -808,6 +1197,10 @@ class ContoladorEstoque extends Controller
             ->get();
 
         foreach ($estoque as $item) {
+            if($request->input('qtd') > $item->qtd) {
+                return redirect('/estoque')->with('resul', 'Retirada do ' . $item_saida[0] . ' não pode ser efetuada, pois o estoque do mesmo esta baixo');
+            }
+
             $item->qtd = $item->qtd - $request->input('qtd');
 
             $saida = new EntradaSaida();
