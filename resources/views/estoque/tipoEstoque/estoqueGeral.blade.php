@@ -2,13 +2,12 @@
 
 @section('conteudo')
     <div class="container mt-2">
-        <h1 class="text-center">Estoque de Geral</h1>
+        <h1 class="text-center">Cadastro Item</h1>
         <hr>
         <div class="card">
             <div class="card-body">
-                <form class="form-horizontal" id="formChapas">
-                    <input type="hidden" id="id" name="id">
-                    <input type="hidden" id="tipo" name="tipo" value='3'>
+                <form action="/api/estoque" class="form-horizontal" id="formChapas" method="POST">
+                    @csrf
                     <div class="row">
                         <div class="col">
                             <div class="form-group w-100">
@@ -18,8 +17,8 @@
                         </div>
                         <div class="col">
                             <div class="form-group w-100">
-                                <label>EAN - Código de barras <span style="color: red;">*</span></label>
-                                <input type="text" class="form-control" placeholder="EX: 000000000 00000" id="ean_item" name="ean_item" required>
+                                <label>EAN - Código de barras</label>
+                                <input type="text" class="form-control" placeholder="EX: 000000000 00000" id="ean_item" name="ean_item">
                             </div>
                         </div>
                         <div class="col">
@@ -44,8 +43,8 @@
                     <div class="row">
                         <div class="col">
                             <div class="form-group w-100">
-                                <label>Código interno (automático)</label>
-                                <input type="text" class="form-control" disabled required>
+                                <label>Código do Produto <span style="color: red;">*</span></label>
+                                <input type="text" class="form-control" placeholder="EX: 000000" id="cod_prod" name="cod_prod" required>
                             </div>
                         </div>
                         <div class="col-2">
@@ -56,14 +55,28 @@
                             <div class="form-group">
                                 <label>Fornecedor <span style="color: red;">*</span></label>
                                 <select name="fornecedor" id="fornecedor" class="form-control">
-                                    
+                                    <option value=""></option>
+
                                 </select>
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-group">
-                                <label>Estante <span style="color: red;">*</span></label>
+                                <label>Grupo <span style="color: red;">*</span></label>
+                                <select name="grupo" id="grupo" class="form-control">
+                                    <option value=""></option>
+
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col" style="display: none;" id="camposChapas">
+
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Estante</label>
                                 <select name="estante" id="estante" class="form-control">
+                                    <option value=""></option>
                                     @foreach ($estantes as $item)
                                         <option value="{{ $item }}">{{ $item }}</option>
                                     @endforeach
@@ -76,21 +89,27 @@
                             <div class="form-group w-100">
                                 <label>Un. Medida<span style="color: red;">*</span></label>
                                 <select name="unidade" id="unidade" class="form-control">
+                                    <option value=""></option>
                                     <option value="UN">UN</option>
-                                    <option value="CX" selected>CX</option>
-                                    <option value="RL">RL</option>
-                                    <option value="MT">MT</option>
-                                    <option value="LT">LT</option>
-                                    <option value="ML">ML</option>
+                                    <option value="M2">M2</option>
+                                    <option value="M3">M3</option>
+                                    <option value="MTL">MTL</option>
                                     <option value="KG">KG</option>
+                                    <option value="LT">LT</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="col-3">
+                        <div class="col" style="display: none;" id="camposMedidas">
+
+                        </div>
+                        <div class="col-3" id="divPreco">
                             <div class="form-group w-100">
                                 <label>Preço<span style="color: red;">*</span></label>
                                 <input type="text" class="form-control" id="preco" name="preco" maxlength="8" required>
                             </div>
+                        </div>
+                        <div class="col" style="display: none;" id="camposTecido">
+
                         </div>
                     </div>
                     <div class="row">
@@ -103,9 +122,8 @@
                     </div>
                 </form>
             </div>
-        </div>
 
-        <div class="card mt-3">
+        <!--<div class="card mt-3">
             <div class="card-body">
                 <div class="table-responsive">
                     <table id="tabelaChapas" class="table table-responsive-sm table-sm table-bordered table-striped mt-3">
@@ -125,7 +143,7 @@
                     </table>
                 </div>
             </div>
-        </div>
+        </div>-->
     </div>
 @endsection
 
@@ -138,16 +156,17 @@
         });
 
         var selectElement = document.querySelector('#fornecedor');
+        var selectElementGrupo = document.querySelector('#grupo');
         var elementoTable = document.querySelector('#tabelaChapas tbody')
 
-            axios.get('/api/fornecedor') 
+            axios.get('/api/fornecedor')
                 .then(function(response) {
                     carregarFornecedores(response.data);
                 })
                 .catch(function(erro) {
                     alert(erro);
                 });
-            
+
             function carregarFornecedores(dados) {
                 for(dado of dados) {
                     var optionElement = document.createElement('option');
@@ -160,81 +179,164 @@
                 }
             }
 
-            function renderChapas(dados) {
-                elementoTable.innerHTML = '';
-                for(dado of dados) {
-                    for(tipo of dado.estoque) {
-                        var tipos = tipo.id; 
-                    }
+                axios.get('/api/categoria')
+                    .then(function(response) {
+                        carregarGrupos(response.data);
+                    })
+                    .catch(function(erro) {
+                        alert(erro);
+                    });
 
-                    if(tipos == 3) {
-                        var trElemento = document.createElement('tr');
-                        var tdElemento1 = document.createElement('td');
-                        var tdElemento2 = document.createElement('td');
-                        var tdElemento3 = document.createElement('td');
-                        var tdElemento4 = document.createElement('td');
-                        var tdElemento5 = document.createElement('td');
-                        var tdElemento6 = document.createElement('td');
+                function carregarGrupos(dados) {
+                    for(dado of dados) {
+                        var optionElement = document.createElement('option');
+                        var textOption = document.createTextNode(dado.descricao);
 
-                        var texto1 = document.createTextNode(dado.id);
-                        var texto2 = document.createTextNode(dado.descricao);
-                        var texto3 = document.createTextNode(dado.cod_item);
-                        var texto4 = document.createTextNode(dado.qtd);
-                        for(fornecedor of dado.fornecedores) {
-                            var texto5 = document.createTextNode(fornecedor.nome);
-                        }
-                        var texto6 = document.createTextNode(dado.estante);
+                        optionElement.setAttribute('value', dado.id);
+                        optionElement.appendChild(textOption);
 
-                        tdElemento1.appendChild(texto1);
-                        tdElemento2.appendChild(texto2);
-                        tdElemento3.appendChild(texto3);
-                        tdElemento4.appendChild(texto4);
-                        tdElemento5.appendChild(texto5);
-                        tdElemento6.appendChild(texto6);
-
-                        trElemento.appendChild(tdElemento1);
-                        trElemento.appendChild(tdElemento2);
-                        trElemento.appendChild(tdElemento3);
-                        trElemento.appendChild(tdElemento4);
-                        trElemento.appendChild(tdElemento5);
-                        trElemento.appendChild(tdElemento6);
-
-                        elementoTable.appendChild(trElemento);
+                        selectElementGrupo.appendChild(optionElement);
                     }
                 }
-            }
+            window.onload = createInput;
+            var un_medida = document.querySelector('#unidade');
+            var grupo = document.querySelector('#grupo');
+            var divMedida = document.querySelector('#camposMedidas');
 
-            function chamarRender() {
-                axios.get('/api/estoque')
-                .then(function(response) {
-                    renderChapas(response.data);
-                })
-                .catch(function(erro) {
-                    alert(erro);
-                });
-            }
+            function createInput() {
+                grupo.onchange = function() {
+                    $('#camposChapas').html('');
+                    $('#camposChapas').attr('class', 'd-none');
 
-            function novoItem() {
-                infla = {
-                    nome : $('#nome').val(),
-                    unidade : $('#unidade').val(),
-                    ncm : $('#ncm').val(),
-                    qtd : $('#qtd').val(),
-                    min : $('#min').val(),
-                    ideal : $('#ideal').val(),
-                    estante : $('#estante').val(),
-                    ean_item : $('#ean_item').val(),
-                    preco : $('#preco').val(),
-                    tipo : '3',
-                    fornecedor : $('#fornecedor').val()
+
+                    $('#camposTecido').html('');
+                    $('#camposTecido').attr('class', 'd-none');
+
+                    if(this.value == 1) {
+                        var divChapas = '<div class="form-group w-100">'+
+                                '<label>Espessura<span style="color: red;">*</span></label>'+
+                                '<select name="espessura" id="espessura" class="form-control">'+
+                                    '<option value="4">4mm</option>'+
+                                    '<option value="6">6mm</option>'+
+                                    '<option value="9">9mm</option>'+
+                                    '<option value="12">12mm</option>'+
+                                    '<option value="15">15mm</option>'+
+                                    '<option value="18">18mm</option>'+
+                                    '<option value="25">25mm</option>'+
+                                    '<option value="35">35mm</option>'+
+                                '</select>'+
+                            '</div>';
+
+                        $('#camposChapas').attr('class', 'd-block');
+                        $('#camposChapas').append(divChapas);
+                    } else if(this.value == 4) {
+                        var divTecido = '<div class="row">' +
+                            '<div class="col">'+
+                                '<div class="form-group w-100">'+
+                                    '<label>Reservado<span style="color: red;">*</span></label>'+
+                                    '<div class="row">'+
+                                        '<div class="col">'+
+                                            '<div class="form-check">'+
+                                                '<input class="form-check-input" type="radio" name="reservado" id="reservado1" value="1">'+
+                                                '<label class="form-check-label" for="reservado1">'+
+                                                    'Sim'+
+                                                '</label>'+
+                                            '</div>'+
+                                        '</div>'+
+                                        '<div class="col">'+
+                                            '<div class="form-check">'+
+                                                '<input class="form-check-input" type="radio" name="reservado" id="reservado0" value="0">'+
+                                                '<label class="form-check-label" for="reservado0">'+
+                                                    'Não'+
+                                                '</label>'+
+                                        '</div>'  +
+                                        '</div>'+
+                                    '</div>'+
+                                '</div>'+
+                            '</div>'+
+                            '<div class="col">'+
+                                '<div class="form-group w-100">'+
+                                    '<label>Pedido<span style="color: red;">*</span></label>'+
+                                    '<input type="text" class="form-control" id="pedido" name="pedido" required>'+
+                                '</div>'+
+                            '</div>'+
+                        '</div>';
+
+                        $('#camposTecido').attr('class', 'd-block');
+                        $('#camposTecido').append(divTecido);
+                    }
                 }
+                un_medida.onchange = function() {
+                    $('#camposMedidas').html('');
+                    $('#divPreco').attr('class', 'col-3');
 
-                $.post('/api/estoque', infla, function() {
-                    alert('Item Cadastrado');
-                    chamarRender();   
-                    limpezaInput();
-                });
-    
+                    if(this.value == 'M2') {
+                        var inputM = '<div class="row"><div class="col">' +
+                            '<div class="form-group w-100">' +
+                                '<label>Largura<span style="color: red;">*</span></label>' +
+                                '<input type="text" class="form-control" id="largura" name="largura" maxlength="8" required>' +
+                            '</div>'+
+                        '</div>' +
+                        '<div class="col">' +
+                            '<div class="form-group w-100">' +
+                                '<label>Altura<span style="color: red;">*</span></label>' +
+                                '<input type="text" class="form-control" id="altura" name="altura" maxlength="8" required>' +
+                            '</div>'+
+                        '</div></div>';
+
+                        $('#camposMedidas').attr('class', 'd-block');
+                        $('#divPreco').attr('class', 'col-3');
+                        $('#camposMedidas').append(inputM);
+
+                    } else if(this.value == 'M3') {
+                        var inputM = '<div class="row">' +
+                            '<div class="col">' +
+                                '<div class="form-group w-100">' +
+                                    '<label>Largura<span style="color: red;">*</span></label>' +
+                                    '<input type="text" class="form-control" id="largura" name="largura" maxlength="8" required>' +
+                                '</div>'+
+                            '</div>' +
+                            '<div class="col">' +
+                                '<div class="form-group w-100">' +
+                                    '<label>Altura<span style="color: red;">*</span></label>' +
+                                    '<input type="text" class="form-control" id="altura" name="altura" maxlength="8" required>' +
+                                '</div>'+
+                            '</div>' +
+                            '<div class="col">' +
+                                '<div class="form-group w-100">' +
+                                    '<label>Profundidade<span style="color: red;">*</span></label>' +
+                                    '<input type="text" class="form-control" id="profundidade" name="profundidade" maxlength="8" required>' +
+                                '</div>'+
+                            '</div>' +
+                        '</div>';
+
+                        $('#camposMedidas').attr('class', 'd-block');
+                        $('#divPreco').attr('class', 'col');
+                        $('#camposMedidas').append(inputM);
+                    } else if (this.value == 'MTL') {
+                        var inputM = '<div class="row"><div class="col">' +
+                            '<div class="form-group w-100">' +
+                                '<label>Largura<span style="color: red;">*</span></label>' +
+                                '<input type="text" class="form-control" id="largura" name="largura" maxlength="8" required>' +
+                            '</div>'+
+                        '</div></div>';
+
+                        $('#camposMedidas').attr('class', 'd-block');
+                        $('#divPreco').attr('class', 'col-3');
+                        $('#camposMedidas').append(inputM);
+                    } else if (this.value == 'LT') {
+                        var inputM = '<div class="row"><div class="col">' +
+                            '<div class="form-group w-100">' +
+                                '<label>Volume<span style="color: red;">*</span></label>' +
+                                '<input type="text" class="form-control" id="volume" name="volume" maxlength="8" required>' +
+                            '</div>'+
+                        '</div></div>';
+
+                        $('#camposMedidas').attr('class', 'd-block');
+                        $('#divPreco').attr('class', 'col-3');
+                        $('#camposMedidas').append(inputM);
+                    }
+                }
             }
 
             function limpezaInput() {
@@ -245,20 +347,5 @@
                 $('#ideal').val('');
                 $('#preco').val('');
             }
-
-            $('#formChapas').submit(function(event) {
-                event.preventDefault();
-
-                if($('#id').val() != '') {
-                    atualizarItem();
-                } else {
-                    novoItem();
-                }
-            });
-
-            $(function() {
-                chamarRender();
-            })
-
     </script>
 @endsection

@@ -29,6 +29,7 @@ class CreateEstoqueGeralsTable extends Migration
             $table->string('espessura')->nullable();
             $table->integer('largura')->nullable();
             $table->integer('altura')->nullable();
+            $table->integer('profundidade')->nullable();
             $table->float('area')->nullable();
             $table->integer('reservado')->nullable();
             $table->integer('pedido')->nullable();

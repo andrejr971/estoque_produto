@@ -31,6 +31,12 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/fornecedor">Fornecedor</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/orcamentos">Orçamentos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/produtos">Produtos</a>
+                </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Pedidos

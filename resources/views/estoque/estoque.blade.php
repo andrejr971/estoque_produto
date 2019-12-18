@@ -8,7 +8,7 @@
                     <h1 class="card-title"> Itens no estoque</h1>
                 </div>
                 <div class="col-3">
-                    <a href="#" class="btn btn-outline-success w-100" data-toggle="modal" data-target="#modalTipo">Adicionar Item</a>
+                    <a href="{{ route("addItemEstoqueGeral") }}" class="btn btn-outline-success w-100">Adicionar Item</a>
                 </div>
                 <div class="col-3">
                     <a href="/fornecedor" class="btn btn-outline-primary w-100"> Fornecedores </a>
@@ -24,7 +24,7 @@
                                 <label for="">Procurar</label>
                             </div>
                             <div class="col">
-                                <input type="text" class="form-control">    
+                                <input type="text" class="form-control">
                             </div>
                         </div>
                     </div>
@@ -43,7 +43,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    
+
                 </tbody>
             </table>
         </div>
@@ -98,7 +98,7 @@
             </form>
         </div>
     </div>
-    
+
     <div class="modal fade" id="modalEditar" tabindex="-1" role="dialog" aria-labelledby="editarModal" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <form class="form-horizontal" id="formEditar" method="POST">
@@ -170,7 +170,7 @@
                                 <div class="form-group">
                                     <label>Fornecedor <span style="color: red;">*</span></label>
                                     <select name="fornecedor" id="fornecedor" class="form-control">
-                                        
+
                                     </select>
                                 </div>
                             </div>
@@ -212,7 +212,7 @@
                                 <div class="form-group w-100">
                                     <label>Altura<span style="color: red;">*</span></label>
                                     <input type="number" class="form-control" id="altura" name="altura" maxlength="8" required>
-                                </div>    
+                                </div>
                             </div>
                             <div class="col">
                                 <div class="form-group w-100">
@@ -249,7 +249,7 @@
                                                 <label class="form-check-label" for="reservado0">
                                                     Não
                                                 </label>
-                                            </div>                                      
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -317,7 +317,7 @@
                 .catch(function(erro) {
                     alert(erro);
                 });
-            
+
             //$('#modalEditar').modal('show');
         }
 
@@ -344,7 +344,7 @@
 
         function editar(dados, id) {
 
-            axios.get('/api/fornecedor') 
+            axios.get('/api/fornecedor')
                 .then(function(response) {
                     carregarFornecedores(response.data, id);
                 })
@@ -358,7 +358,7 @@
                     $('#cod').val(dado.cod_item);
                     $('#cod1').val(dado.cod_item);
                     $('#estoque_id').val(dado.id);
-                
+
                     if(dado.ean_item == null) {
                         $('#ean').val('');
                         $('#ean').prop('disabled', true);
@@ -372,7 +372,7 @@
                     $('#ideal').val(dado.estoque_max);
                     $('#ncm').val(dado.ncm_item);
 
-                    for(fornecedor of dado.fornecedores) { 
+                    for(fornecedor of dado.fornecedores) {
                         $('#fornecedor_id').val(fornecedor.id);
                         $('#tipo_estoque_id').val(fornecedor.pivot.tipo_estoque_id);
 
@@ -380,7 +380,7 @@
                             $('#estante').val('');
                             $('#estante').prop('disabled', true);
                         } else {
-                            
+
                             $('#estante').prop('disabled', false);
                             $('#estante').val($('option:contains("' + dado.estante + '")').val());
                         }
@@ -393,7 +393,7 @@
                             $('#altura').prop('disabled', true);
                             $('#espessura').prop('disabled', true);
                         } else {
-                            
+
                             $('#largura').prop('disabled', false);
                             $('#altura').prop('disabled', false);
                             $('#espessura').prop('disabled', false);
@@ -418,7 +418,7 @@
                                 $('#reservado1').filter('[value="1"]').attr('checked', true);
                             } else {
                                 $('#reservado0').filter('[value="0"]').attr('checked', true);
-                            } 
+                            }
 
                             $('#pedido').val(dado.pedido);
                         }
@@ -449,7 +449,7 @@
         }
 
         /*function atualizarItem() {
-            
+
             var item = {
                 id : $('#estoque_id').val(),
                 descricao : $('#nome').val(),
@@ -525,14 +525,14 @@
                     var grupo =  c.descricao;
                 }
             });
-            
+
         }
 
         function renderChapas(dados) {
             //console.log(dados);
                 elementoTable.innerHTML = '';
                 for(dado of dados) {
-                    
+
                     var trElemento = document.createElement('tr');
                     var tdElemento1 = document.createElement('td');
                     var tdElemento2 = document.createElement('td');
@@ -547,7 +547,7 @@
                     var texto4 = document.createTextNode(dado.cod_item);
                     var texto5 = document.createTextNode(dado.qtd + ' ' + dado.un_medida);
 
-                    for(tipo of dado.estoque) {                        
+                    for(tipo of dado.estoque) {
                         var texto3 = document.createTextNode(tipo.descricao);
                     }
 
@@ -607,10 +607,10 @@
         $(function() {
             chamarRender();
         })
-    
-    
-    
-    
+
+
+
+
     </script>
-    
+
 @endsection

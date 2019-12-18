@@ -25,7 +25,7 @@ class ContoladorEstoque extends Controller
 
         $estoque = Estoque_geral::with('fornecedores')->get();
         $entrada = EntradaSaida::where('situacao', '1')
-                ->whereBetween('created_at', [$data2->toDateString(), $dataAtual->toDateString()])->limit(3)->get();
+                ->whereMonth('created_at', date('m'))->limit(3)->get();
 
         return view('estoque.index', [
             'estoque' => $estoque,
@@ -756,40 +756,50 @@ class ContoladorEstoque extends Controller
 
         $cod = str_split(strtoupper($request->input('nome')), 3);
 
-        $tipo_estoque = $request->input('tipo');
+        $tipo_estoque = $request->input('grupo');
         $fornecedor_id = $request->input('fornecedor');
 
-        if($tipo_estoque == '1') {
-            $estoque->descricao = strtoupper($request->input('nome'));
-            if($ult_id === null) {
-                $estoque->cod_item = 'CHA' . $cod[0]. '_' . str_pad('1', 4, '0', STR_PAD_LEFT);
-            } else {
-                $estoque->cod_item = 'CHA' . $cod[0]. '_' . str_pad($ult_id->id+1, 4, '0', STR_PAD_LEFT);
-            }
+        $categoria = tipo_estoque::find($tipo_estoque);
 
-            $estoque->un_medida = $request->input('unidade');
-            $estoque->qtd = $request->input('qtd');
-            $estoque->estoque_min = $request->input('min');
-            $estoque->estoque_max = $request->input('ideal');
-            $estoque->preco = $request->input('preco');
-            $estoque->espessura =  $request->input('espessura');
-            $estoque->largura =  $request->input('largura');
-            $estoque->altura =  $request->input('altura');
+        $cat = str_split($categoria['descricao'], 3);
 
-            $estoque->area = (($request->input('largura') / 1000) * ($request->input('altura') / 1000) * $estoque->qtd);;
 
-            /*$estoque->ean_item = null;*/
-            $estoque->ncm_item = $request->input('ncm');
-            /*$estoque->estante = null;
-            $estoque->vol = null;
-            $estoque->reservado = null;
-            $estoque->pedido = null;
-            $estoque->metragem = null;*/
+        //if($tipo_estoque == '1') {
+        $estoque->descricao = strtoupper($request->input('nome'));
+        if($ult_id === null) {
+            $estoque->cod_item = strtoupper($cat[0]) . $cod[0]. '_' . str_pad('1', 4, '0', STR_PAD_LEFT);
+        } else {
+            $estoque->cod_item = strtoupper($cat[0]) . $cod[0]. '_' . str_pad($ult_id->id+1, 4, '0', STR_PAD_LEFT);
+        }
+
+        $estoque->un_medida = $request->input('unidade');
+        $estoque->cod_prod = $request->input('cod_prod');
+        $estoque->qtd = $request->input('qtd');
+        $estoque->estoque_min = $request->input('min');
+        $estoque->estoque_max = $request->input('ideal');
+        $estoque->preco = $request->input('preco');
+        $estoque->espessura =  $request->input('espessura');
+        $estoque->largura =  $request->input('largura');
+        $estoque->altura =  $request->input('altura');
+
+        if($request->input('unidade') === 'M2') {
+            $estoque->area = ($request->input('largura') * $request->input('altura'));
+        } elseif($request->input('unidade') === 'M3') {
+            $estoque->area = ($request->input('largura') * $request->input('altura') * $request->input('profundidade'));
+        }
+        $estoque->profundidade = $request->input('profundidade');
+        $estoque->ean_item = $request->input('ean_item');
+        $estoque->ncm_item = $request->input('ncm');
+        $estoque->estante = $request->input('estante');
+        $estoque->vol = $request->input('volume');
+        $estoque->reservado = $request->input('reservado');
+        $estoque->pedido = $request->input('pedido');
+        $estoque->metragem = null;
 
 
             //return redirect('/estoque');
 
-        } else if($tipo_estoque == '2') {
+        /*} else if($tipo_estoque == '2') {
             $estoque->descricao = strtoupper($request->input('nome'));
             if($ult_id === null) {
                 $estoque->cod_item = 'INF' . $cod[0]. '_' . str_pad('1', 4, '0', STR_PAD_LEFT);
@@ -864,13 +874,13 @@ class ContoladorEstoque extends Controller
             $estoque->ean_item = $request->input('ean_item');
             $estoque->ncm_item = $request->input('ncm');
             $estoque->estante = $request->input('estante');
-        }
+        }*/
         $estoque->save();
 
         $relEstoque = Estoque_geral::all()->last();
-        $relEstoque->fornecedores()->attach($fornecedor_id, ['tipo_estoque_id' => $request->input('categoria')]);
+        $relEstoque->fornecedores()->attach($fornecedor_id, ['tipo_estoque_id' => $request->input('grupo')]);
 
-        return json_encode($estoque);
+        return redirect()->back()->with('resul', 'Item cadastrado com sucesso');
     }
 
     public function grupo(Request $request) {
@@ -1035,42 +1045,17 @@ class ContoladorEstoque extends Controller
 
                 $estoque->descricao = strtoupper($item->nome);
 
-                if($tipo_estoque == '1') {
-                    if($ult_id === null) {
-                        $estoque->cod_item = 'CHA' . $cod[0]. '_' . str_pad('1', 4, '0', STR_PAD_LEFT);
-                    } else {
-                        $estoque->cod_item = 'CHA' . $cod[0]. '_' . str_pad($ult_id->id+1, 4, '0', STR_PAD_LEFT);
-                    }
-                } else if($tipo_estoque == '2') {
-                    if($ult_id === null) {
-                        $estoque->cod_item = 'INF' . $cod[0]. '_' . str_pad('1', 4, '0', STR_PAD_LEFT);
-                    } else {
-                        $estoque->cod_item = 'INF' . $cod[0]. '_' . str_pad($ult_id->id+1, 4, '0', STR_PAD_LEFT);
-                    }
-                } else if($tipo_estoque == '3') {
-                    if($ult_id === null) {
-                        $estoque->cod_item = 'GER' . $cod[0]. '_' . str_pad('1', 4, '0', STR_PAD_LEFT);
-                    } else {
-                        $estoque->cod_item = 'GER' . $cod[0]. '_' . str_pad($ult_id->id+1, 4, '0', STR_PAD_LEFT);
-                    }
-                } else if($tipo_estoque == '4') {
-                    if($ult_id === null) {
-                        $estoque->cod_item = 'TEX' . $cod[0]. '_' . str_pad('1', 4, '0', STR_PAD_LEFT);
-                    } else {
-                        $estoque->cod_item = 'TEX' . $cod[0]. '_' . str_pad($ult_id->id+1, 4, '0', STR_PAD_LEFT);
-                    }
 
-                } else if($tipo_estoque >= '5') {
-                    $categoria = tipo_estoque::find($tipo_estoque);
+                $categoria = tipo_estoque::find($tipo_estoque);
 
-                    $cat = str_split($categoria->descricao, 3);
+                $cat = str_split($categoria->descricao, 3);
 
-                    if($ult_id === null) {
-                        $estoque->cod_item = strtoupper($cat[0]) . $cod[0]. '_' . str_pad('1', 4, '0', STR_PAD_LEFT);
-                    } else {
-                        $estoque->cod_item = strtoupper($cat[0]) . $cod[0]. '_' . str_pad($ult_id->id+1, 4, '0', STR_PAD_LEFT);
-                    }
+                if($ult_id === null) {
+                    $estoque->cod_item = strtoupper($cat[0]) . $cod[0]. '_' . str_pad('1', 4, '0', STR_PAD_LEFT);
+                } else {
+                    $estoque->cod_item = strtoupper($cat[0]) . $cod[0]. '_' . str_pad($ult_id->id+1, 4, '0', STR_PAD_LEFT);
                 }
+
 
                 $estoque->un_medida = $item->un_medida;
                 $estoque->cod_prod = $item->cod_prod;

@@ -19,7 +19,7 @@ function limparCampos() {
     $('#bairro').val('');
     $('#cidade').val('');
     $('#id').val('');
-    
+
 }
 axios.get('https://servicodados.ibge.gov.br/api/v1/localidades/estados')
     .then(function(response) {
@@ -184,7 +184,7 @@ function remover(id) {
     .catch(function(erro) {
         alert(erro);
     });
-    
+
 }
 
 function carregarFornecedores() {
@@ -202,7 +202,7 @@ function carregarUf () {
         for (let i = 0; i < dados.length; i++) {
             opcao = '<option value ="' + dados[i].sigla +'"> ' + dados[i].sigla + '</option>';
             $('#uf').append(opcao);
-            
+
         }
     });
 }
@@ -227,7 +227,7 @@ function novoFornecedor() {
 
         alert('Fornecedor Cadastrado');
     });
-    
+
     $('#modalFornecedor').modal('hide');
 }
 
@@ -266,14 +266,14 @@ function verItens(dados, id) {
 
                 tdElemento1.appendChild(btnEditar);
                 //tdElemento1.appendChild(btnRemover);
-    
+
                 tdElemento = document.createTextNode(item.descricao);
                 trElemento.appendChild(tdElemento);
                 trElemento.appendChild(tdElemento1);
                 trElemento.appendChild(tdElemento1);
 
                 tabelaItens.appendChild(trElemento);
-            } 
+            }
         }
 
     }
@@ -318,7 +318,7 @@ function ItemSelecionado(id) {
 }
 
 function editarItemSelecionado(dados, id) {
-    axios.get('/api/fornecedor') 
+    axios.get('/api/fornecedor')
         .then(function(response) {
             carregarFornecedoresitens(response.data, id);
         })
@@ -333,7 +333,7 @@ function editarItemSelecionado(dados, id) {
                 $('#cod').val(dado.cod_item);
                 $('#cod1').val(dado.cod_item);
                 $('#estoque_id').val(dado.id);
-            
+
                 if(dado.ean_item == null) {
                     $('#ean').val('');
                     $('#ean').prop('disabled', true);
@@ -347,17 +347,17 @@ function editarItemSelecionado(dados, id) {
                 $('#ideal').val(dado.estoque_max);
                 $('#ncm').val(dado.ncm_item);
 
-                for(fornecedor of dado.fornecedores) { 
+                for(fornecedor of dado.fornecedores) {
                     $('#fornecedor_id').val(fornecedor.id);
                     $('#tipo_estoque_id').val(fornecedor.pivot.tipo_estoque_id);
                 }
                 $('#unidade').val($('option:contains("' + dado.un_medida + '")').val());
-                
+
                 if(dado.estante == null) {
                     $('#estante').val('');
                     $('#estante').prop('disabled', true);
                 } else {
-                    
+
                     $('#estante').prop('disabled', false);
                     $('#estante').val($('option:contains("' + dado.estante + '")').val());
                 }
@@ -370,7 +370,7 @@ function editarItemSelecionado(dados, id) {
                     $('#altura').prop('disabled', true);
                     $('#espessura').prop('disabled', true);
                 } else {
-                    
+
                     $('#largura').prop('disabled', false);
                     $('#altura').prop('disabled', false);
                     $('#espessura').prop('disabled', false);
@@ -394,7 +394,7 @@ function editarItemSelecionado(dados, id) {
                         $('#reservado1').filter('[value="1"]').attr('checked', true);
                     } else {
                         $('#reservado0').filter('[value="0"]').attr('checked', true);
-                    } 
+                    }
 
                     $('#pedido').val(dado.pedido);
                 }
@@ -430,7 +430,7 @@ function removerItem(id) {
         url: '/api/estoque/' + id,
         dado: fornecedor_id,
         context:this,
-        success: function(data) {
+        success: function() {
             $('#modalEditar').modal('hide');
             alert('Item Removido');
             //itens(data);
