@@ -153,3 +153,48 @@ Route::resource('/fornecedor', 'ContoladorFornecedor');
 Route::resource('/estoque', 'ContoladorEstoque');
 
 Route::get('/categoria', 'ContoladorEstoque@indexJCat');
+
+Route::get('/estoque/busca/material', 'ProdutosControle@buscaProd');
+
+Route::get('/estoque/busca/{unidade}', 'ProdutosControle@busca');
+
+Route::delete('/estoque/busca/{id}', 'ProdutosControle@destroy');
+
+Route::post('/estoque/busca/materialProd', [
+    'as' => 'materialProd',
+    'uses' => 'ProdutosControle@estoqueProduto'
+]);
+
+Route::post('/estoque/busca/materialProdM3', [
+    'as' => 'materialProd',
+    'uses' => 'ProdutosControle@estoqueProdutoM3'
+]);
+
+Route::post('/estoque/busca/materialProdMTL', [
+    'as' => 'materialProd',
+    'uses' => 'ProdutosControle@estoqueProdutoMTL'
+]);
+
+Route::post('/estoque/busca/materialProdUN', [
+    'as' => 'materialProd',
+    'uses' => 'ProdutosControle@estoqueProdutoUN'
+]);
+
+Route::post('/estoque/busca/materialProdKG', [
+    'as' => 'materialProd',
+    'uses' => 'ProdutosControle@estoqueProdutoKG'
+]);
+
+Route::post('/estoque/busca/materialProdLT', [
+    'as' => 'materialProd',
+    'uses' => 'ProdutosControle@estoqueProdutoLT'
+]);
+
+Route::put('/estoque/busca/up', [
+    'as' => 'materialProd',
+    'uses' => 'ProdutosControle@update'
+]);
+
+Route::get('/estoque/busca/valorMaterial/{id}', 'ProdutosControle@buscaValor');
+
+Route::get('/estoque/busca/verMaterialProd', 'ProdutosControle@buscaMaterialProd');

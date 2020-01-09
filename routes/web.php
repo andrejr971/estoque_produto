@@ -237,3 +237,27 @@ Route::get('/fornecedor', [
         'as' => 'fornecedor',
         'uses' => 'ContoladorFornecedor@indexView'
 ]);
+
+/** Produtos */
+
+Route::prefix('/produtos')->group(function() {
+    Route::get('/', [
+        'as' => 'indexProduto',
+        'uses' => 'ProdutosControle@index'
+    ]);
+
+    Route::get('/criarFornecido', [
+        'as' => 'criarFornecido',
+        'uses' => 'ProdutosControle@criarFornecido'
+    ]);
+
+    Route::post('/criarFornecido', [
+        'as' => 'salvarFornecido',
+        'uses' => 'ProdutosControle@store'
+    ]);
+
+});
+
+Route::get('/estoque/busca/verMaterialProd/{id}', 'ProdutosControle@buscaMaterialProd');
+
+Route::get('/estoque/busca/{id}', 'ProdutosControle@edit');

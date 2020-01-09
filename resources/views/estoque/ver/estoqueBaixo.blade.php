@@ -26,7 +26,7 @@
                                 <label for="">Procurar</label>
                             </div>
                             <div class="col">
-                                <input type="text" class="form-control">    
+                                <input type="text" class="form-control">
                             </div>
                         </div>
                     </div>
@@ -55,19 +55,19 @@
                             <div class="row">
                                 <div class="col">
                                     <label for="qtd">Quantidade</label>
-                                    <input type="number" id="qtd" name="qtd" value="1" class="form-control">    
+                                    <input type="number" id="qtd" name="qtd" value="1" class="form-control">
                                 </div>
                                 <div class="col">
                                     <label for="min">Estoque Min.</label>
-                                    <input type="number" id="min" name="min" value="1" class="form-control" disabled>    
-                                </div>  
+                                    <input type="number" id="min" name="min" value="1" class="form-control" disabled>
+                                </div>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="usarMin">
                                 <label class="form-check-label" for="usarMin">
                                     Usar estoque Minimo
                                 </label>
-                            </div>                        
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -82,7 +82,7 @@
         @csrf
         <input type="hidden" name="fornecedor_id">
     </form>
-    
+
 @endsection
 
 @section('javascript')
@@ -133,7 +133,7 @@
                 });
             } else {
                 alert('Item já está na lista');
-            $('#modalQtd').modal('hide');
+                $('#modalQtd').modal('hide');
             }
         }
 
@@ -161,7 +161,7 @@
                 .catch(function(erro) {
                     console.log(erro);
                 });
-           
+
         });
 
         var divTabela = document.querySelector('#tabela');
@@ -225,9 +225,9 @@
                         if(item.pivot.tipo_estoque_id === 1) {
                             var textoT3 = document.createTextNode('CHAPAS');
                         } else if (item.pivot.tipo_estoque_id === 2) {
-                            var textoT3 = document.createTextNode('INFLAMÁVEIS'); 
+                            var textoT3 = document.createTextNode('INFLAMÁVEIS');
                         } else if (item.pivot.tipo_estoque_id === 3) {
-                            var textoT3 = document.createTextNode('GERAL'); 
+                            var textoT3 = document.createTextNode('GERAL');
                         } else {
                             var textoT3 = document.createTextNode('TEXTIL');
                         }
@@ -243,7 +243,7 @@
                         btnPedido.setAttribute('onclick', 'mostrarModal(' + item.id + ')');
                         btnPedido.setAttribute('class', 'btn btn-outline-info w-100');
                         btnPedido.appendChild(textoBtn2);
-                        
+
                         elementoTd1.appendChild(textoT1);
                         elementoTd2.appendChild(textoT2);
                         elementoTd3.appendChild(textoT3);
@@ -310,5 +310,5 @@
             chamarRender();
         })
     </script>
-    
+
 @endsection

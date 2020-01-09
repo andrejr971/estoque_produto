@@ -335,6 +335,17 @@
                         $('#camposMedidas').attr('class', 'd-block');
                         $('#divPreco').attr('class', 'col-3');
                         $('#camposMedidas').append(inputM);
+                    } else if (this.value == 'KG') {
+                        var inputM = '<div class="row"><div class="col">' +
+                            '<div class="form-group w-100">' +
+                                '<label>Volume<span style="color: red;">*</span></label>' +
+                                '<input type="text" class="form-control" id="volume" name="volume" maxlength="8" required>' +
+                            '</div>'+
+                        '</div></div>';
+
+                        $('#camposMedidas').attr('class', 'd-block');
+                        $('#divPreco').attr('class', 'col-3');
+                        $('#camposMedidas').append(inputM);
                     }
                 }
             }

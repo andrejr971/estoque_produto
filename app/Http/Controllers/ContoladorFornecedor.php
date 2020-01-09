@@ -48,7 +48,7 @@ class ContoladorFornecedor extends Controller
     public function store(Request $request)
     {
         $fornecedor = new Fornecedor();
-        
+
         $fornecedor->nome = $request->input('nome');
         $fornecedor->email = $request->input('email');
         $fornecedor->cnpj = $request->input('cnpj');
@@ -64,7 +64,7 @@ class ContoladorFornecedor extends Controller
         $fornecedor->save();
 
         return json_encode($fornecedor);
-        
+
     }
 
     /**
@@ -122,7 +122,7 @@ class ContoladorFornecedor extends Controller
             return json_encode($fornecedor);
         }
         return response('Fornecedor não encontrado', 404);
-        
+
 
     }
 
@@ -138,7 +138,7 @@ class ContoladorFornecedor extends Controller
         $fornecedor = Fornecedor::find($id);
 
         if(isset($fornecedor)) {
-            for ($i=0; $i < count($itens); $i++) { 
+            for ($i=0; $i < count($itens); $i++) {
                 $estoque = Estoque_geral::find($itens[$i]->estoque_geral_id);
                 $estoque->fornecedores()->detach($id);
 
